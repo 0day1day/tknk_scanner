@@ -49,7 +49,7 @@ if __name__ == '__main__':
          subprocess.call(["procdump.exe", "-ma", config["target_file"]],cwd="dump")
 
     else:
-        subprocess.run(['cmd.exe', "/c", "start", "..\hollows_hunter_x64_v0.1-rc4\hollows_hunter.exe"],cwd="dump")
+        subprocess.run(['cmd.exe', "/c", "start", "..\hollows_hunter_x64_v0.1-rc6\hollows_hunter.exe"],cwd="dump")
 
         while(1):
             time.sleep(10)
