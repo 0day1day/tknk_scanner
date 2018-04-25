@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os, sys, argparse, shutil, json, subprocess, time, yara, glob, hashlib, datetime
 
 parser = argparse.ArgumentParser()
