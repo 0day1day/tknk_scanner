@@ -18,12 +18,22 @@ if(args.time):
 
 print ("time=%d" % (times))
 
-config = {'target_file':args.target_file, 'time':times, 'procdump':args.procdump}
+
+if "/" in args.target_file:
+    target_file = args.target_file.rsplit("/", 1)[1]
+else:
+    target_file = args.target_file
+
+config = {'target_file':target_file, 'time':times, 'procdump':args.procdump}
+print (config)
 
 with open('config.json', 'w') as outfile:
     json.dump(config, outfile)
 
-shutil.copy(args.target_file, "target/")
+try:
+    shutil.move(args.target_file, "target/")
+except shutil.Error:
+    pass
 
 print(subprocess.run(['VBoxManage', "startvm", "win10"]))
 
@@ -44,10 +54,12 @@ while(1):
 
     if count == 60:
         print("Unpack fail\n")
+        print(subprocess.run(['VBoxManage', "snapshot", "win10", "restore", "run_kicker"]))
         exit()
 
 if os.path.isfile("result/dump.zip") == False:
     print("Unpack fail\n")
+    print(subprocess.run(['VBoxManage', "snapshot", "win10", "restore", "run_kicker"]))
     exit()
 
 else:

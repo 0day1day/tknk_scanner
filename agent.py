@@ -22,8 +22,14 @@ if __name__ == '__main__':
     config_url = 'http://192.168.56.1:8080/config.json'
     target_url = 'http://192.168.56.1:8080/target/'
     up_url = 'http://192.168.56.1:8080/result'
+    tools_url = 'http://192.168.56.1:8080/tools/'
+
+    tools = ["hollows_hunter.exe", "pe-sieve.dll", "procdump.exe", "pssuspend.exe"]
 
     download(config_url)
+
+    for tool_name in tools:
+        download(tools_url+tool_name)
 
     with open('config.json', 'r') as outfile:
         config = json.load(outfile)
@@ -45,8 +51,8 @@ if __name__ == '__main__':
     print("dumping\n")
 
     if config["procdump"]:
-         subprocess.call(["pssuspend.exe", config["target_file"]])
-         subprocess.call(["procdump.exe", "-ma", config["target_file"]],cwd="dump")
+         subprocess.call(["pssuspend.exe", config["target_file"], "/AcceptEula"])
+         subprocess.call(["procdump.exe", "-ma", config["target_file"], "/AcceptEula"],cwd="dump")
 
     else:
         subprocess.call(["pssuspend.exe", config["target_file"]])
@@ -63,10 +69,10 @@ if __name__ == '__main__':
     subprocess.run(['powershell', "compress-archive", "-Force", "dump", "dump.zip"])
 
     if os.path.isfile("dump.zip") == False:
-        subprocess.run(['shutdown', "/s", "/t", "0"])
+        subprocess.run(['shutdown', "/p"])
 
     else:    
         upload(up_url)
-        subprocess.run(['shutdown', "/s", "/t", "0"])
+        subprocess.run(['shutdown', "/p"])
 
     
