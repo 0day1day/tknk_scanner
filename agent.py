@@ -24,7 +24,7 @@ if __name__ == '__main__':
     up_url = 'http://192.168.56.1:8080/result'
     tools_url = 'http://192.168.56.1:8080/tools/'
 
-    tools = ["hollows_hunter.exe", "pe-sieve.dll", "procdump.exe", "pssuspend.exe"]
+    tools = ["hollows_hunter.exe", "pe-sieve.dll", "procdump.exe", "pssuspend.exe", "winpmem.exe"]
 
     download(config_url)
 
