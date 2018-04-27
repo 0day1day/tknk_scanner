@@ -9,15 +9,21 @@ parser.add_argument('-d', action="store_true", dest="procdump", default=False, h
 args = parser.parse_args()
 
 times=180
+result = {}
 
 now = datetime.datetime.today()
 file_sha1 = str(hashlib.sha256(open(args.target_file,'rb').read()).hexdigest())
+
+rules = yara.compile('rules/index.yar')
+matches = rules.match(args.target_file)
+
+result.update({file_sha1:{"detect_rule":str(matches), "file_name":args.target_file,
+                      "time":times, "scan_time":str(now.strftime("%Y-%m-%d_%H:%M:%S"))}})
 
 if(args.time):
     times = args.time
 
 print ("time=%d" % (times))
-
 
 if "/" in args.target_file:
     target_file = args.target_file.rsplit("/", 1)[1]
@@ -34,6 +40,8 @@ try:
     shutil.move(args.target_file, "target/")
 except shutil.Error:
     pass
+
+os.mkdir("result/" + str(now.strftime("%Y-%m-%d_%H:%M:%S")))
 
 print(subprocess.run(['VBoxManage', "startvm", "win10"]))
 
@@ -54,29 +62,30 @@ while(1):
 
     if count == 60:
         print("Unpack fail\n")
+        print(subprocess.run(['VBoxManage', "controlvm", "win10", "poweroff"]))
         print(subprocess.run(['VBoxManage', "snapshot", "win10", "restore", "run_kicker"]))
+        with open("result/"+ str(now.strftime("%Y-%m-%d_%H:%M:%S")) + "/" + file_sha1+'.json', 'w') as outfile:
+            json.dump(result, outfile)
+        os.remove("config.json")
         exit()
 
 if os.path.isfile("result/dump.zip") == False:
     print("Unpack fail\n")
-    print(subprocess.run(['VBoxManage', "snapshot", "win10", "restore", "run_kicker"]))
+    with open("result/"+ str(now.strftime("%Y-%m-%d_%H:%M:%S")) + "/" +file_sha1+'.json', 'w') as outfile:
+            json.dump(result, outfile)
+    os.remove("config.json")
     exit()
 
 else:
     subprocess.run(['unzip', "dump.zip"], cwd="result")   
-
-rules = yara.compile('rules/index.yar')
-
-result = {}
 
 files = glob.glob("result/dump/**", recursive=True)
 
 for f in files:
     if "exe" in f.rsplit(".", 1) or "dll" in f.rsplit(".", 1) or "dmp" in f.rsplit(".", 1):
         sha256_hash = str(hashlib.sha256(open(f,'rb').read()).hexdigest())
-        print(sha256_hash)
         matches = rules.match(f)
-        result.update({sha256_hash:{"detect_rule":str(matches), "name":f.rsplit("/", 1)[1], "file_name":args.target_file,
+        result.update({sha256_hash:{"detect_rule":str(matches), "name":f.rsplit("/", 1)[1], "file_name":target_file,
                       "time":times, "file_sha1":file_sha1,
                       "scan_time":str(now.strftime("%Y-%m-%d_%H:%M:%S"))}})
 
@@ -85,10 +94,7 @@ print (json.dumps(result, indent=4))
 with open("result/dump/"+file_sha1+'.json', 'w') as outfile:
     json.dump(result, outfile)
 
-
-os.rename("result/dump", "result/"+str(now.strftime("%Y-%m-%d_%H:%M:%S")))
-
+os.rename("result/dump/", "result/"+str(now.strftime("%Y-%m-%d_%H:%M:%S")))
 os.remove("result/dump.zip")
-
 os.remove("config.json")
 
