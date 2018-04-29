@@ -56,7 +56,7 @@ if __name__ == '__main__':
 
     else:
         subprocess.call(["pssuspend.exe", config["target_file"]])
-        subprocess.run(['cmd.exe', "/c", "start", "..\hollows_hunter_x64_v0.1-rc6\hollows_hunter.exe"],cwd="dump")
+        subprocess.run(['cmd.exe', "/c", "start", "../hollows_hunter.exe"],cwd="dump")
 
         while(1):
             time.sleep(10)
