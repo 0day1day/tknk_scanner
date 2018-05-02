@@ -24,7 +24,7 @@ if __name__ == '__main__':
     up_url = 'http://192.168.56.1:8080/result'
     tools_url = 'http://192.168.56.1:8080/tools/'
 
-    tools = ["hollows_hunter.exe", "pe-sieve.dll", "procdump.exe", "pssuspend.exe", "winpmem.exe"]
+    tools = ["hollows_hunter.exe", "pe-sieve.dll", "procdump.exe", "pssuspend.exe"]
 
     download(config_url)
 
@@ -50,29 +50,27 @@ if __name__ == '__main__':
 
     print("dumping\n")
 
-    if config["procdump"]:
+    if config["mode"] == "procdump":
          subprocess.call(["pssuspend.exe", config["target_file"], "/AcceptEula"])
          subprocess.call(["procdump.exe", "-ma", config["target_file"], "/AcceptEula"],cwd="dump")
 
-    else:
+    elif config["mode"] == "hollows_hunter":
         subprocess.call(["pssuspend.exe", config["target_file"]])
         subprocess.run(['cmd.exe', "/c", "start", "../hollows_hunter.exe"],cwd="dump")
 
         while(1):
             time.sleep(10)
             ret = subprocess.check_output("tasklist")
-            if "hollows_hunter.exe" not in str(ret):
+            if config["mode"] not in str(ret):
                 break
 
     print("make zip\n")
-
     subprocess.run(['powershell', "compress-archive", "-Force", "dump", "dump.zip"])
 
     if os.path.isfile("dump.zip") == False:
-        subprocess.run(['shutdown', "/p"])
+        subprocess.run(['shutdown', "/p", "/f"])
 
     else:    
         upload(up_url)
-        subprocess.run(['shutdown', "/p"])
+        subprocess.run(['shutdown', "/p", "/f"])
 
-    
