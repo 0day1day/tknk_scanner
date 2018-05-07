@@ -5,7 +5,7 @@ import os, sys, argparse, shutil, json, subprocess, time, yara, glob, hashlib, d
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', action="store", dest="target_file", help='input target file path')
 parser.add_argument('-t', action="store", dest="time", type=float, default=False, help='input waiting time for unpack [default=180, MAX=600]')
-parser.add_argument('-m', action="store", dest="mode", help='[hollows_hunter, procdump]')
+parser.add_argument('-m', action="store", dest="mode", help='[hollows_hunter, procdump, diff]')
 args = parser.parse_args()
 
 times=180
@@ -60,7 +60,7 @@ while(1):
 
     count = count + 1
 
-    if count == 60:
+    if count == 500:
         print(subprocess.run(['VBoxManage', "controlvm", "win10", "poweroff"]))
         print(subprocess.run(['VBoxManage', "snapshot", "win10", "restore", "run_kicker"]))
         print("Unpack timeout")
