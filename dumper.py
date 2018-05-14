@@ -5,7 +5,7 @@ Usage::
     ./dumper.py [<port>]
 """
 from http.server import SimpleHTTPRequestHandler, HTTPServer
-import logging, cgi, os, re
+import logging, cgi, os, re, subprocess
 from urllib.parse import urlparse
 
 class S(SimpleHTTPRequestHandler):
@@ -15,9 +15,10 @@ class S(SimpleHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        if None != re.search('/dump', self.path):
-            self.wfile.write("{}\n".format(self.path).encode('utf-8'))   
-            self.send_response(200)
+        if None != re.search('/status', self.path):
+            self.send_head()
+            self.wfile.write("{}\n".format(self.path).encode('utf-8'))  
+            #self.send_response(200)
             #self.send_header('Content-type','text/html')
             #self.end_headers()
         
@@ -39,14 +40,18 @@ class S(SimpleHTTPRequestHandler):
 
         self.send_response(200)
         self.end_headers()
+
+        path = self.path.strip("/")
+        if path == "dump_start":
+            subprocess.run(['cmd.exe', "/c", "start", "python", "dump.py"]) 
+            return
         
         for field in form.keys():
             field_item = form[field]
             if field_item.filename:
                 file_data = field_item.file.read()
                 file_len = len(file_data)
-                path = self.path.strip("/")
-                with open(path + "/" + field_item.filename, mode = 'wb') as f:
+                with open(field_item.filename, mode = 'wb') as f:
                     f.write(file_data)
 
                 self.wfile.write("upload {}\n".format(field_item.filename).encode('utf-8'))
@@ -57,7 +62,7 @@ class S(SimpleHTTPRequestHandler):
 
 def run(server_class=HTTPServer, handler_class=S, port=8080):
     logging.basicConfig(level=logging.INFO)
-    server_address = ('192.168.56.1', port)
+    server_address = ('192.168.56.2', port)
     httpd = server_class(server_address, handler_class)
     logging.info('Starting httpd...\n')
     try:
