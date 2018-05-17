@@ -14,7 +14,8 @@ def download(url):
 def upload(url, filename):
     files = {'file': open(filename, 'rb')}
     r = requests.post(url, files=files)
-    print(r.text)
+    print (r.text)
+    return r.text
 
 def dump(url):
     print("dump_start")
@@ -23,14 +24,20 @@ def dump(url):
 
 def state(url):
     res = requests.get(url, stream=True)
-    return res.status_code
+    return res.text
     
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', action="store", dest="target_file", help='input target file path')
 parser.add_argument('-t', action="store", dest="time", type=float, default=False, help='input waiting time for unpack [default=180, MAX=600]')
-parser.add_argument('-m', action="store", dest="mode", help='[hollows_hunter, procdump, diff, pd64]')
+parser.add_argument('-m', action="store", dest="mode", help='[hollows_hunter, procdump, diff]')
 args = parser.parse_args()
+
+print(args.mode)
+
+if args.mode != "hollows_hunter" and args.mode !="procdump" and args.mode != "diff":
+    print("please select mode : [hollows_hunter, procdump, diff]")
+    exit()
 
 times=180
 result = {}
@@ -79,26 +86,34 @@ while(1):
             upload(up_url, tool_name)
         upload(up_url, args.target_file)
         dump("http://192.168.56.2:8080/dump_start")
-    
         break
-
-
-time.sleep(times + 60)
 
 count = 0
 
 while(1):
-    status_code = state("http://192.168.56.2:8080/status") 
-    print(status_code)
-    if status_code == 200:
-        download("http://192.168.56.2:8080/dump.zip")
-        shutil.move("dump.zip", "result/")
+    try: 
+        status_code = state("http://192.168.56.2:8080/status") 
+    except OSError:
+        print("connection Error.")
+        print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
+        print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
+        break
 
-        #vm_state = subprocess.check_output(['VBoxManage', "list", "runningvms"])
-        #if "win10" not in str(vm_state):
+    if status_code == "done":
+        print(status_code)
+        download("http://192.168.56.2:8080/dump.zip")
+        try:
+            shutil.move("dump.zip", "result/")
+
+        except FileNotFoundError:
+            print("Unpack fail\n")
+            subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"])
+            subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"])
+            break
+
         print("dump finish")
-        print(subprocess.run(['VBoxManage', "controlvm", "win10", "poweroff"]))
-        print(subprocess.run(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
+        print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
+        print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
         break
 
     time.sleep(10)
@@ -106,8 +121,8 @@ while(1):
     count = count + 1
 
     if count == 500:
-        print(subprocess.run(['VBoxManage', "controlvm", "win10", "poweroff"]))
-        print(subprocess.run(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
+        print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
+        print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
         print("Unpack timeout")
         break
 
@@ -115,6 +130,7 @@ if os.path.isfile("result/dump.zip") == False:
     print("Unpack fail\n")
     with open("result/"+ str(now.strftime("%Y-%m-%d_%H:%M:%S")) + "/" +file_sha1+'.json', 'w') as outfile:
             json.dump(result, outfile)
+    print (json.dumps(result, indent=4))
     os.remove("config.json")
     exit()
 

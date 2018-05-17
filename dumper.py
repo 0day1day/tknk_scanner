@@ -16,12 +16,11 @@ class S(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         if None != re.search('/status', self.path):
-            self.send_head()
-            self.wfile.write("{}\n".format(self.path).encode('utf-8'))  
-            #self.send_response(200)
-            #self.send_header('Content-type','text/html')
-            #self.end_headers()
-        
+            f = self.send_head()
+            status = f.read()
+            print(status.decode('utf-8'))
+            self.wfile.write("{}".format(status.decode('utf-8')).encode('utf-8'))  
+
         else:       
             f = self.send_head()
             if f:
@@ -43,6 +42,8 @@ class S(SimpleHTTPRequestHandler):
 
         path = self.path.strip("/")
         if path == "dump_start":
+            with open('status', mode = 'w') as f:
+                f.write('start')
             subprocess.run(['cmd.exe', "/c", "start", "python", "dump.py"]) 
             return
         
@@ -54,10 +55,10 @@ class S(SimpleHTTPRequestHandler):
                 with open(field_item.filename, mode = 'wb') as f:
                     f.write(file_data)
 
-                self.wfile.write("upload {}\n".format(field_item.filename).encode('utf-8'))
+                self.wfile.write("upload {}".format(field_item.filename).encode('utf-8'))
             else:
                 self.wfile.write("{}=".format(field).encode('utf-8'))
-                self.wfile.write("{}\n".format(form[field].value).encode('utf-8'))                
+                self.wfile.write("{}".format(form[field].value).encode('utf-8'))                
         return
 
 def run(server_class=HTTPServer, handler_class=S, port=8080):

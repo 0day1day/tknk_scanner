@@ -58,7 +58,8 @@ elif config["mode"] == "diff":
 print("make zip\n")
 subprocess.call(['powershell', "compress-archive", "-Force", "dump", "dump.zip"])
 
-Path('status').touch()
+with open('status', mode = 'w') as f:
+  f.write('done')
 
 #if os.path.isfile("dump.zip") == False:
 #    subprocess.call(['shutdown', "/p", "/f"])
