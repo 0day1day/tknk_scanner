@@ -1,12 +1,72 @@
 #!/usr/bin/env python3
-"""
-Very simple HTTP server in python for logging requests
-Usage::
-    ./dumper.py [<port>]
-"""
+
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 import logging, cgi, os, re, subprocess
 from urllib.parse import urlparse
+from ctypes import *
+import sys, time, requests, json, ctypes.wintypes
+from pathlib import Path
+
+def dump():
+    os.mkdir("dump")
+
+    with open('config.json', 'r') as outfile:
+        config = json.load(outfile)
+
+    if config["mode"] == "diff":
+        Psapi = ctypes.WinDLL('Psapi.dll')
+        EnumProcesses = Psapi.EnumProcesses
+        EnumProcesses.restype = ctypes.wintypes.BOOL
+
+        ProcessIds = (ctypes.wintypes.DWORD*512)()
+        cb = ctypes.sizeof(ProcessIds)
+        BytesReturned = ctypes.wintypes.DWORD()
+
+        EnumProcesses(ctypes.byref(ProcessIds), cb, ctypes.byref(BytesReturned))
+        src_set = set(ProcessIds)
+
+    subprocess.run(['cmd.exe', "/c", "start", config['target_file']])
+
+    print(("wait for unpack %d seconds\n") % config["time"])
+        
+    time.sleep(config["time"])
+
+    print("dumping\n")
+
+    if config["mode"] == "procdump":
+         subprocess.call(["pssuspend.exe", config["target_file"], "/AcceptEula"])
+         subprocess.call(["procdump.exe", "-ma", config["target_file"], "/AcceptEula"],cwd="dump")
+
+    elif config["mode"] == "hollows_hunter":
+        subprocess.call(["pssuspend.exe", config["target_file"]])
+        subprocess.call(["hollows_hunter.exe"],cwd="dump")
+
+    elif config["mode"] == "diff":
+        EnumProcesses(ctypes.byref(ProcessIds), cb, ctypes.byref(BytesReturned))
+        tag_set = set(ProcessIds)
+
+        diff_ProcessIds = list(src_set ^ tag_set)
+        print(diff_ProcessIds)
+
+        new_ProcessIds = []
+
+        for pid in diff_ProcessIds:
+            try:
+                proc_state = subprocess.check_output(["pssuspend.exe", str(pid), "/AcceptEula"])
+                if "suspended." in str(proc_state):
+                    new_ProcessIds.append(pid)
+            except subprocess.CalledProcessError:
+                print(pid)
+        print(new_ProcessIds)
+        for pid in new_ProcessIds:
+            subprocess.call(["procdump.exe", "-ma", str(pid), "/AcceptEula"],cwd="dump")
+
+    print("make zip\n")
+    subprocess.call(['powershell', "compress-archive", "-Force", "dump", "dump.zip"])
+
+    with open('status', mode = 'w') as f:
+      f.write('done')
+
 
 class S(SimpleHTTPRequestHandler):
     def _set_response(self):
@@ -43,8 +103,8 @@ class S(SimpleHTTPRequestHandler):
         path = self.path.strip("/")
         if path == "dump_start":
             with open('status', mode = 'w') as f:
-                f.write('start')
-            subprocess.run(['cmd.exe', "/c", "start", "python", "dump.py"]) 
+                f.write('processing')
+            subprocess.run(['cmd.exe', "/c", "start", "python", "dumper.py", "--dump"]) 
             return
         
         for field in form.keys():
@@ -77,6 +137,7 @@ if __name__ == '__main__':
     from sys import argv
 
     if len(argv) == 2:
-        run(port=int(argv[1]))
+        if argv[1] == "--dump":
+            dump()
     else:
         run()

@@ -1,158 +1,49 @@
-#!/usr/bin/env python3
+from http.server import SimpleHTTPRequestHandler, HTTPServer
+import logging, json, subprocess, requests
 
-import os, sys, argparse, shutil, json, subprocess, time, yara, glob, hashlib, datetime, requests
+class S(SimpleHTTPRequestHandler):
 
-def download(url):
-    file_name = os.path.basename(url)
-    res = requests.get(url, stream=True)
-    if res.status_code == 200:
-        with open(file_name, 'wb') as file:
-            for chunk in res.iter_content(chunk_size=1024):
-                file.write(chunk)
-    return res.status_code
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html; charset=UTF-8')
+        self.end_headers()
 
-def upload(url, filename):
-    files = {'file': open(filename, 'rb')}
-    r = requests.post(url, files=files)
-    print (r.text)
-    return r.text
+    def do_POST(self):
+        content_len = int(self.headers.get('content-length'))
+        requestBody = self.rfile.read(content_len).decode('UTF-8')
+        #print('requestBody=' + requestBody)
+        json_data = json.loads(requestBody)
+        self.send_response(200)
+        self.send_header('Content-type', 'text/json')
+        self.end_headers()
 
-def dump(url):
-    print("dump_start")
-    r = requests.post(url)
-    return
+        if "/" in json_data['path']:
+            target_file = json_data['path'].rsplit("/", 1)[1]
+            json_data.update({'target_file':target_file})
+        else:
+            json_data.update({'target_file':json_data['path']})
 
-def state(url):
-    res = requests.get(url, stream=True)
-    return res.text
-    
+        print(json.dumps(json_data, sort_keys=False, indent=4))
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-f', action="store", dest="target_file", help='input target file path')
-parser.add_argument('-t', action="store", dest="time", type=float, default=False, help='input waiting time for unpack [default=180, MAX=600]')
-parser.add_argument('-m', action="store", dest="mode", help='[hollows_hunter, procdump, diff]')
-args = parser.parse_args()
+        with open('config.json', 'w') as outfile:
+            json.dump(json_data, outfile)
 
-print(args.mode)
+        subprocess.run(['gnome-terminal', "-e", "bash -c './scan.py'"])
+        #subprocess.run(["./scan.py"])
 
-if args.mode != "hollows_hunter" and args.mode !="procdump" and args.mode != "diff":
-    print("please select mode : [hollows_hunter, procdump, diff]")
-    exit()
+def run(server_class=HTTPServer, handler_class=S, port=8080):
+    logging.basicConfig(level=logging.INFO)
+    server_address = ('192.168.56.1', port)
+    httpd = server_class(server_address, handler_class)
+    logging.info('Starting httpd...\n')
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    httpd.server_close()
+    logging.info('Stopping httpd...\n')
 
-times=180
-result = {}
+if __name__ == '__main__':
+    from sys import argv
 
-now = datetime.datetime.today()
-file_sha1 = str(hashlib.sha256(open(args.target_file,'rb').read()).hexdigest())
-
-rules = yara.compile('rules/index.yar')
-matches = rules.match(args.target_file)
-
-if(args.time):
-    times = args.time
-
-print ("time=%d" % (times))
-
-result.update({file_sha1:{"detect_rule":str(matches), "file_name":args.target_file,
-                      "time":times, "scan_time":str(now.strftime("%Y-%m-%d_%H:%M:%S"))}})
-
-if "/" in args.target_file:
-    target_file = args.target_file.rsplit("/", 1)[1]
-else:
-    target_file = args.target_file
-
-config = {'target_file':target_file, 'time':times, 'mode':args.mode}
-print (config)
-
-with open('config.json', 'w') as outfile:
-    json.dump(config, outfile)
-
-try:
-    shutil.move(args.target_file, "target/")
-except shutil.Error:
-    pass
-
-os.mkdir("result/" + str(now.strftime("%Y-%m-%d_%H:%M:%S")))
-
-print(subprocess.run(['VBoxManage', "startvm", "win10"]))
-
-while(1):
-    vm_state = subprocess.check_output(['VBoxManage', "list", "runningvms"])
-    if "win10" in str(vm_state):
-        up_url = "http://192.168.56.2:8080/"
-        upload(up_url, "config.json")
-        tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/pssuspend.exe"]
-        for tool_name in tools:
-            upload(up_url, tool_name)
-        upload(up_url, args.target_file)
-        dump("http://192.168.56.2:8080/dump_start")
-        break
-
-count = 0
-
-while(1):
-    try: 
-        status_code = state("http://192.168.56.2:8080/status") 
-    except OSError:
-        print("connection Error.")
-        print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
-        print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
-        break
-
-    if status_code == "done":
-        print(status_code)
-        download("http://192.168.56.2:8080/dump.zip")
-        try:
-            shutil.move("dump.zip", "result/")
-
-        except FileNotFoundError:
-            print("Unpack fail\n")
-            subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"])
-            subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"])
-            break
-
-        print("dump finish")
-        print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
-        print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
-        break
-
-    time.sleep(10)
-
-    count = count + 1
-
-    if count == 500:
-        print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
-        print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
-        print("Unpack timeout")
-        break
-
-if os.path.isfile("result/dump.zip") == False:
-    print("Unpack fail\n")
-    with open("result/"+ str(now.strftime("%Y-%m-%d_%H:%M:%S")) + "/" +file_sha1+'.json', 'w') as outfile:
-            json.dump(result, outfile)
-    print (json.dumps(result, indent=4))
-    os.remove("config.json")
-    exit()
-
-else:
-    subprocess.run(['unzip', "dump.zip"], cwd="result")   
-
-files = glob.glob("result/dump/**", recursive=True)
-
-for f in files:
-	if "exe" in f.rsplit(".", 1) or "dll" in f.rsplit(".", 1) or "dmp" in f.rsplit(".", 1):
-		sha256_hash = str(hashlib.sha256(open(f,'rb').read()).hexdigest())
-		matches = rules.match(f)
-		result.update({sha256_hash:{"detect_rule":str(matches), "name":f.rsplit("/", 1)[1], "file_name":target_file,
-		              "time":times, "file_sha1":file_sha1,
-		              "scan_time":str(now.strftime("%Y-%m-%d_%H:%M:%S"))}})
-
-print (json.dumps(result, indent=4))
-
-with open("result/dump/"+file_sha1+'.json', 'w') as outfile:
-    json.dump(result, outfile)
-
-os.rename("result/dump/", "result/"+str(now.strftime("%Y-%m-%d_%H:%M:%S")))
-os.remove("result/dump.zip")
-os.remove("config.json")
-
+    run()
