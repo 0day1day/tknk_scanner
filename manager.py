@@ -23,13 +23,13 @@ class S(SimpleHTTPRequestHandler):
         else:
             json_data.update({'target_file':json_data['path']})
 
-        print(json.dumps(json_data, sort_keys=False, indent=4))
+        print(json.dumps(json_data, indent=4))
 
         with open('config.json', 'w') as outfile:
             json.dump(json_data, outfile)
 
-        subprocess.run(['gnome-terminal', "-e", "bash -c './scan.py'"])
-        #subprocess.run(["./scan.py"])
+        #subprocess.run(['gnome-terminal', "-e", "bash -c './scan.py'"])
+        subprocess.run(["./scan.py"])
 
 def run(server_class=HTTPServer, handler_class=S, port=8080):
     logging.basicConfig(level=logging.INFO)
