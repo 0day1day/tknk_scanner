@@ -34,7 +34,7 @@ with open('config.json', 'r') as f:
     config = json.load(f)
 
 result = {"result":
-            {"unpack":False,
+            {"success":False,
              "comment":[]},
           "scans":[]
          }
@@ -103,7 +103,7 @@ while(1):
             break
 
         print("dump finish")
-        result['result']["unpack"] = True
+        result['result']["success"] = True
         print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
         print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
         break
@@ -119,7 +119,7 @@ while(1):
         result['result']["comment"].append("Unpack timeout")
         break
 
-if result['result']["unpack"] == False:
+if result['result']["success"] == False:
     print("Unpack fail\n")
     with open("result/"+ str(now.strftime("%Y-%m-%d_%H:%M:%S")) + "/" +file_sha256+'.json', 'w') as outfile:
             json.dump(result, outfile, indent=4)
