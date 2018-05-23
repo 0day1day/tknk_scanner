@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import os, sys, shutil, json, subprocess, time, yara, glob, hashlib, datetime, requests
+from pymongo import MongoClient
+from bson import ObjectId
 
 def download(url):
     file_name = os.path.basename(url)
@@ -29,18 +31,23 @@ def state(url):
         return res.status_code
 
     return res.text
-    
+  
 with open('config.json', 'r') as f:
     config = json.load(f)
 
+now = datetime.datetime.today()
+
 result = {"success":False,
           "comment":[],
+          "time":config['time'], 
+          "mode":config['mode'],
+          "scan_time":str(now.strftime("%Y-%m-%d_%H:%M:%S")),
           "scans":[]
          }
 
 vm_url = "http://192.168.56.2:8080/"
 
-now = datetime.datetime.today()
+
 file_sha256 = str(hashlib.sha256(open(config['path'],'rb').read()).hexdigest())
 
 rules = yara.compile('rules/index.yar')
@@ -53,8 +60,7 @@ except shutil.Error:
 
 print (config)
 
-result['scans'].append({"sha256":file_sha256, "detect_rule":str(matches), "file_name":config['target_file'],
-                      "time":config['time'], "scan_time":str(now.strftime("%Y-%m-%d_%H:%M:%S"))})
+result['scans'].append({"sha256":file_sha256, "detect_rule":str(matches), "file_name":config['target_file']})
 
 os.mkdir("result/" + str(now.strftime("%Y-%m-%d_%H:%M:%S")))
 
@@ -113,7 +119,7 @@ while(1):
 
     count = count + 1
 
-    if count == 60:
+    if count == 120:
         print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
         print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
         print("Unpack timeout")
@@ -137,8 +143,7 @@ for f in files:
 	if "exe" in f.rsplit(".", 1) or "dll" in f.rsplit(".", 1) or "dmp" in f.rsplit(".", 1):
 		sha256_hash = str(hashlib.sha256(open(f,'rb').read()).hexdigest())
 		matches = rules.match(f)
-		result['scans'].append({"sha256":sha256_hash, "detect_rule":str(matches), "file_name":f.rsplit("/", 1)[1],
-		              "time":config['time'],"scan_time":str(now.strftime("%Y-%m-%d_%H:%M:%S"))})
+		result['scans'].append({"sha256":sha256_hash, "detect_rule":str(matches), "file_name":f.rsplit("/", 1)[1]})
 
 print (json.dumps(result, indent=4))
 
