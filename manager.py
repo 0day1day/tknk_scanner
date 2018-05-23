@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 import logging, json, subprocess, requests
 

@@ -33,11 +33,12 @@ def state(url):
 with open('config.json', 'r') as f:
     config = json.load(f)
 
-result = {"result":
-            {"success":False,
-             "comment":[]},
+result = {"success":False,
+          "comment":[],
           "scans":[]
          }
+
+vm_url = "http://192.168.56.2:8080/"
 
 now = datetime.datetime.today()
 file_sha256 = str(hashlib.sha256(open(config['path'],'rb').read()).hexdigest())
@@ -62,48 +63,48 @@ print(subprocess.run(['VBoxManage', "startvm", "win10"]))
 while(1):
     vm_state = subprocess.check_output(['VBoxManage', "list", "runningvms"])
     if "win10" in str(vm_state):
-        up_url = "http://192.168.56.2:8080/"
+        up_url = vm_url
         upload(up_url, "config.json")
         tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/pssuspend.exe"]
         for tool_name in tools:
             upload(up_url, tool_name)
         upload(up_url, "target/" + config['target_file'])
-        dump("http://192.168.56.2:8080/dump_start")
+        dump(vm_url + "dump_start")
         break
 
 count = 0
 
 while(1):
     try: 
-        status_code = state("http://192.168.56.2:8080/status") 
+        status_code = state(vm_url + "status") 
     except OSError:
         print("connection Error")
-        result['result']["comment"].append("connection Error")
+        result["comment"].append("connection Error")
         print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
         print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
         break
 
     if status_code == 404:
         print("status code: 404")
-        result['result']["comment"].append("connection Error")
+        result["comment"].append("connection Error")
         print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
         print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
         break
 
     if status_code == "done":
         print(status_code)
-        status_code = download("http://192.168.56.2:8080/dump.zip")
+        status_code = download(vm_url + "dump.zip")
         if status_code == 200:
             shutil.move("dump.zip", "result/")
         else:
             print("dump does not exist\n")
-            result['result']["comment"].append("dump does not exist")
+            result["comment"].append("dump does not exist")
             subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"])
             subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"])
             break
 
         print("dump finish")
-        result['result']["success"] = True
+        result["success"] = True
         print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
         print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
         break
@@ -116,10 +117,10 @@ while(1):
         print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
         print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
         print("Unpack timeout")
-        result['result']["comment"].append("Unpack timeout")
+        result["comment"].append("Unpack timeout")
         break
 
-if result['result']["success"] == False:
+if result["success"] == False:
     print("Unpack fail\n")
     with open("result/"+ str(now.strftime("%Y-%m-%d_%H:%M:%S")) + "/" +file_sha256+'.json', 'w') as outfile:
             json.dump(result, outfile, indent=4)
