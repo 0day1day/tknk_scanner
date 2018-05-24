@@ -2,6 +2,7 @@
 
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 import logging, json, subprocess, requests
+from pymongo import MongoClient
 
 class S(SimpleHTTPRequestHandler):
 
@@ -25,13 +26,22 @@ class S(SimpleHTTPRequestHandler):
         else:
             json_data.update({'target_file':json_data['path']})
 
+        post = {}
+        InsertOneResult = collection.insert_one(post)
+
+        print(InsertOneResult.inserted_id)
+        print(type(InsertOneResult.inserted_id))
+
         print(json.dumps(json_data, indent=4))
 
         with open('config.json', 'w') as outfile:
             json.dump(json_data, outfile)
 
+        self.wfile.write((str(InsertOneResult.inserted_id)+"\n").encode('utf-8'))
+
         #subprocess.run(['gnome-terminal', "-e", "bash -c './scan.py'"])
-        subprocess.run(["./scan.py"])
+        cmd = [("./scan.py "+str(InsertOneResult.inserted_id))]
+        subprocess.Popen(cmd, shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
 
 def run(server_class=HTTPServer, handler_class=S, port=8080):
     logging.basicConfig(level=logging.INFO)
@@ -46,6 +56,9 @@ def run(server_class=HTTPServer, handler_class=S, port=8080):
     logging.info('Stopping httpd...\n')
 
 if __name__ == '__main__':
-    from sys import argv
+    client = MongoClient('localhost', 27017)
+    db = client.scan_database
+
+    collection = db.scan_collection
 
     run()

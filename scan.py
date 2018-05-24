@@ -2,7 +2,7 @@
 
 import os, sys, shutil, json, subprocess, time, yara, glob, hashlib, datetime, requests
 from pymongo import MongoClient
-from bson import ObjectId
+from bson.objectid import ObjectId
 
 def download(url):
     file_name = os.path.basename(url)
@@ -32,9 +32,26 @@ def state(url):
 
     return res.text
   
+def vm_down():
+    print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
+    print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
+
+
+args = sys.argv
+print (args[1])
+print (type(args[1]))
+
+#db connect
+client = MongoClient('localhost', 27017)
+db = client.scan_database
+
+collection = db.scan_collection
+
+#read config
 with open('config.json', 'r') as f:
     config = json.load(f)
 
+#make report format
 now = datetime.datetime.today()
 
 result = {"success":False,
@@ -47,7 +64,6 @@ result = {"success":False,
 
 vm_url = "http://192.168.56.2:8080/"
 
-
 file_sha256 = str(hashlib.sha256(open(config['path'],'rb').read()).hexdigest())
 
 rules = yara.compile('rules/index.yar')
@@ -57,8 +73,6 @@ try:
     shutil.move(config['path'], "target/")
 except shutil.Error:
     pass  
-
-print (config)
 
 result['scans'].append({"sha256":file_sha256, "detect_rule":str(matches), "file_name":config['target_file']})
 
@@ -82,22 +96,20 @@ count = 0
 
 while(1):
     try: 
-        status_code = state(vm_url + "status") 
+        status_code = state(vm_url + "status.exe") 
     except OSError:
         print("connection Error")
         result["comment"].append("connection Error")
-        print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
-        print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
+        vm_down()
         break
 
     if status_code == 404:
         print("status code: 404")
         result["comment"].append("connection Error")
-        print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
-        print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
+        vm_down()
         break
 
-    if status_code == "done":
+    if status_code == "finish":
         print(status_code)
         status_code = download(vm_url + "dump.zip")
         if status_code == 200:
@@ -105,23 +117,20 @@ while(1):
         else:
             print("dump does not exist\n")
             result["comment"].append("dump does not exist")
-            subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"])
-            subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"])
+            vm_down()
             break
 
         print("dump finish")
         result["success"] = True
-        print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
-        print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
+        vm_down()
         break
 
     time.sleep(10)
 
     count = count + 1
 
-    if count == 120:
-        print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
-        print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
+    if count == 60:
+        vm_down()
         print("Unpack timeout")
         result["comment"].append("Unpack timeout")
         break
@@ -132,6 +141,8 @@ if result["success"] == False:
             json.dump(result, outfile, indent=4)
     print (json.dumps(result, indent=4))
     os.remove("config.json")
+    collection.update({'_id':InsertOneResult.inserted_id},result)
+    print(list(collection.find()))
     exit()
 
 else:
@@ -153,4 +164,9 @@ with open("result/dump/"+file_sha256+'.json', 'w') as outfile:
 os.rename("result/dump/", "result/"+str(now.strftime("%Y-%m-%d_%H:%M:%S")))
 os.remove("result/dump.zip")
 os.remove("config.json")
+
+collection.update({'_id':ObjectId(args[1])},result)
+
+print(list(collection.find()))
+
 

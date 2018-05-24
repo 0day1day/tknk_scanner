@@ -64,8 +64,8 @@ def dump():
     print("make zip\n")
     subprocess.call(['powershell', "compress-archive", "-Force", "dump", "dump.zip"])
 
-    with open('status', mode = 'w') as f:
-      f.write('done')
+    with open('status.exe', mode = 'w') as f:
+      f.write('finish')
 
 
 class S(SimpleHTTPRequestHandler):
@@ -102,7 +102,7 @@ class S(SimpleHTTPRequestHandler):
 
         path = self.path.strip("/")
         if path == "dump_start":
-            with open('status', mode = 'w') as f:
+            with open('status.exe', mode = 'w') as f:
                 f.write('processing')
             subprocess.run(['cmd.exe', "/c", "start", "python", "dumper.py", "--dump"]) 
             return
