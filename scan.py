@@ -54,7 +54,7 @@ with open('config.json', 'r') as f:
 #make report format
 now = datetime.datetime.today()
 
-result = {"status":{"detail":"", "is_success":False},
+result = {"result":{"detail":"", "is_success":False},
           "run_time":config['time'], 
           "mode":config['mode'],
           "timestamp":str(now.isoformat()),
@@ -73,7 +73,7 @@ try:
 except shutil.Error:
     pass  
 
-result['scans'].append({"sha256":file_sha256, "detect_rule":list(matches), "file_name":config['target_file']})
+result['scans'].append({"sha256":file_sha256, "detect_rule":map(str,matches), "file_name":config['target_file']})
 
 os.mkdir("result/" + str(now.strftime("%Y-%m-%d_%H:%M:%S")))
 
@@ -153,7 +153,7 @@ for f in files:
 	if "exe" in f.rsplit(".", 1) or "dll" in f.rsplit(".", 1) or "dmp" in f.rsplit(".", 1):
 		sha256_hash = str(hashlib.sha256(open(f,'rb').read()).hexdigest())
 		matches = rules.match(f)
-		result['scans'].append({"sha256":sha256_hash, "detect_rule":list(matches), "file_name":f.rsplit("/", 1)[1]})
+		result['scans'].append({"sha256":sha256_hash, "detect_rule":map(str,matches), "file_name":f.rsplit("/", 1)[1]})
 
 print (json.dumps(result, indent=4))
 
@@ -166,6 +166,6 @@ os.remove("config.json")
 
 collection.update({'_id':ObjectId(args[1])},result)
 
-print(list(collection.find()))
+#print(list(collection.find()))
 
 
