@@ -54,11 +54,10 @@ with open('config.json', 'r') as f:
 #make report format
 now = datetime.datetime.today()
 
-result = {"success":False,
-          "comment":[],
-          "time":config['time'], 
+result = {"status":{"detail":"", "is_success":False},
+          "run_time":config['time'], 
           "mode":config['mode'],
-          "scan_time":str(now.strftime("%Y-%m-%d_%H:%M:%S")),
+          "timestamp":str(now.isoformat()),
           "scans":[]
          }
 
@@ -99,13 +98,13 @@ while(1):
         status_code = state(vm_url + "status.exe") 
     except OSError:
         print("connection Error")
-        result["comment"].append("connection Error")
+        result["status"]["detail"] = "connection Error"
         vm_down()
         break
 
     if status_code == 404:
         print("status code: 404")
-        result["comment"].append("connection Error")
+        result["status"]["detail"] = "connection Error"
         vm_down()
         break
 
@@ -116,12 +115,12 @@ while(1):
             shutil.move("dump.zip", "result/")
         else:
             print("dump does not exist\n")
-            result["comment"].append("dump does not exist")
+            result["status"]["detail"] = "dump does not exist"
             vm_down()
             break
 
         print("dump finish")
-        result["success"] = True
+        result["status"]["is_success"] = True
         vm_down()
         break
 
@@ -132,16 +131,16 @@ while(1):
     if count == 60:
         vm_down()
         print("Unpack timeout")
-        result["comment"].append("Unpack timeout")
+        result["status"]["detail"] = "Unpack timeout"
         break
 
-if result["success"] == False:
+if result["status"]["is_success"] == False:
     print("Unpack fail\n")
     with open("result/"+ str(now.strftime("%Y-%m-%d_%H:%M:%S")) + "/" +file_sha256+'.json', 'w') as outfile:
             json.dump(result, outfile, indent=4)
     print (json.dumps(result, indent=4))
     os.remove("config.json")
-    collection.update({'_id':InsertOneResult.inserted_id},result)
+    collection.update({'_id':ObjectId(args[1])},result)
     print(list(collection.find()))
     exit()
 
@@ -161,7 +160,7 @@ print (json.dumps(result, indent=4))
 with open("result/dump/"+file_sha256+'.json', 'w') as outfile:
     json.dump(result, outfile, indent=4)
 
-os.rename("result/dump/", "result/"+str(now.strftime("%Y-%m-%d_%H:%M:%S")))
+os.rename("result/dump/", "result/"+str(now.isoformat()))
 os.remove("result/dump.zip")
 os.remove("config.json")
 
