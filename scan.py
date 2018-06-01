@@ -73,7 +73,7 @@ try:
 except shutil.Error:
     pass  
 
-result['scans'].append({"sha256":file_sha256, "detect_rule":matches, "file_name":config['target_file']})
+result['scans'].append({"sha256":file_sha256, "detect_rule":list(matches), "file_name":config['target_file']})
 
 os.mkdir("result/" + str(now.strftime("%Y-%m-%d_%H:%M:%S")))
 
@@ -153,7 +153,7 @@ for f in files:
 	if "exe" in f.rsplit(".", 1) or "dll" in f.rsplit(".", 1) or "dmp" in f.rsplit(".", 1):
 		sha256_hash = str(hashlib.sha256(open(f,'rb').read()).hexdigest())
 		matches = rules.match(f)
-		result['scans'].append({"sha256":sha256_hash, "detect_rule":matches, "file_name":f.rsplit("/", 1)[1]})
+		result['scans'].append({"sha256":sha256_hash, "detect_rule":list(matches), "file_name":f.rsplit("/", 1)[1]})
 
 print (json.dumps(result, indent=4))
 
