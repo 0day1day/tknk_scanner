@@ -65,7 +65,8 @@ vm_url = "http://192.168.56.2:8080/"
 
 file_sha256 = str(hashlib.sha256(open(config['path'],'rb').read()).hexdigest())
 
-rules = yara.compile('yara/index.yar')
+
+rules = yara.compile('index.yar')
 matches = rules.match(config['path'])
 
 try:
