@@ -73,7 +73,7 @@ try:
 except shutil.Error:
     pass  
 
-result['scans'].append({"sha256":file_sha256, "detect_rule":map(str,matches), "file_name":config['target_file']})
+result['scans'].append({"sha256":file_sha256, "detect_rule":list(map(str,matches)), "file_name":config['target_file']})
 
 os.mkdir("result/" + str(now.strftime("%Y-%m-%d_%H:%M:%S")))
 
@@ -98,13 +98,13 @@ while(1):
         status_code = state(vm_url + "status.exe") 
     except OSError:
         print("connection Error")
-        result["status"]["detail"] = "connection Error"
+        result["result"]["detail"] = "connection Error"
         vm_down()
         break
 
     if status_code == 404:
         print("status code: 404")
-        result["status"]["detail"] = "connection Error"
+        result["result"]["detail"] = "connection Error"
         vm_down()
         break
 
@@ -115,12 +115,12 @@ while(1):
             shutil.move("dump.zip", "result/")
         else:
             print("dump does not exist\n")
-            result["status"]["detail"] = "dump does not exist"
+            result["result"]["detail"] = "dump does not exist"
             vm_down()
             break
 
         print("dump finish")
-        result["status"]["is_success"] = True
+        result["result"]["is_success"] = True
         vm_down()
         break
 
@@ -131,10 +131,10 @@ while(1):
     if count == 60:
         vm_down()
         print("Unpack timeout")
-        result["status"]["detail"] = "Unpack timeout"
+        result["result"]["detail"] = "Unpack timeout"
         break
 
-if result["status"]["is_success"] == False:
+if result["result"]["is_success"] == False:
     print("Unpack fail\n")
     with open("result/"+ str(now.strftime("%Y-%m-%d_%H:%M:%S")) + "/" +file_sha256+'.json', 'w') as outfile:
             json.dump(result, outfile, indent=4)
@@ -153,7 +153,7 @@ for f in files:
 	if "exe" in f.rsplit(".", 1) or "dll" in f.rsplit(".", 1) or "dmp" in f.rsplit(".", 1):
 		sha256_hash = str(hashlib.sha256(open(f,'rb').read()).hexdigest())
 		matches = rules.match(f)
-		result['scans'].append({"sha256":sha256_hash, "detect_rule":map(str,matches), "file_name":f.rsplit("/", 1)[1]})
+		result['scans'].append({"sha256":sha256_hash, "detect_rule":list(map(str,matches)), "file_name":f.rsplit("/", 1)[1]})
 
 print (json.dumps(result, indent=4))
 
