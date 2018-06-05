@@ -38,8 +38,6 @@ def vm_down():
 
 
 args = sys.argv
-print (args[1])
-print (type(args[1]))
 
 #db connect
 client = MongoClient('localhost', 27017)
@@ -142,7 +140,6 @@ if result["result"]["is_success"] == False:
     print (json.dumps(result, indent=4))
     os.remove("config.json")
     collection.update({'_id':ObjectId(args[1])},result)
-    print(list(collection.find()))
     exit()
 
 else:
@@ -161,12 +158,11 @@ print (json.dumps(result, indent=4))
 with open("result/dump/"+file_sha256+'.json', 'w') as outfile:
     json.dump(result, outfile, indent=4)
 
-os.rename("result/dump/", "result/"+str(now.isoformat()))
+os.rename("result/dump/", "result/"+str(now.strftime("%Y-%m-%d_%H:%M:%S")))
 os.remove("result/dump.zip")
 os.remove("config.json")
 
 collection.update({'_id':ObjectId(args[1])},result)
 
 #print(list(collection.find()))
-
 
