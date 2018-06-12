@@ -18,7 +18,7 @@ def find_signatures(root):
 
 if __name__ == "__main__":
         generated = []
-        paths = ["yara/my_rules","yara/signature-base/yara", "yara/rules/malware", "yara/rules/Antidebug_AntiVM"]
+        paths = ["yara/my_rules","yara/signature-base/yara", "yara/rules/malware"]
         #paths = ["yara/my_rules", "yara/rules/malware"]
         
         for path in paths:
