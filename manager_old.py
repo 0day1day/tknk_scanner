@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
 from http.server import SimpleHTTPRequestHandler, HTTPServer
-import logging, json, subprocess, requests, time
+import logging, json, subprocess, requests
 from pymongo import MongoClient
-
-vm_name = "win10"
 
 class S(SimpleHTTPRequestHandler):
 
@@ -41,15 +39,8 @@ class S(SimpleHTTPRequestHandler):
 
         self.wfile.write((str(InsertOneResult.inserted_id)+"\n").encode('utf-8'))
 
-        print(subprocess.run(['VBoxManage', "startvm", vm_name]))
-
-        while(1):
-            vm_state = subprocess.check_output(['VBoxManage', "list", "runningvms"])
-            time.sleep(1)
-            if "win10" in str(vm_state):
-                cmd = [("./xmlrpc_client.py "+str(InsertOneResult.inserted_id))]
-                subprocess.Popen(cmd, shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
-                break
+        cmd = [("./xmlrpc_client.py "+str(InsertOneResult.inserted_id))]
+        subprocess.Popen(cmd, shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
 
 def run(server_class=HTTPServer, handler_class=S, port=8080):
     logging.basicConfig(level=logging.INFO)

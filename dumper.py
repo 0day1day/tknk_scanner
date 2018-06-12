@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 from http.server import SimpleHTTPRequestHandler, HTTPServer
-import logging, cgi, os, re, subprocess
+import logging, cgi, re
 from urllib.parse import urlparse
 from ctypes import *
-import sys, time, requests, json, ctypes.wintypes
+import sys, time, requests, json, ctypes.wintypes, os, subprocess
 from pathlib import Path
 
 def dump():

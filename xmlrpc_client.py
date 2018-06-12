@@ -1,23 +1,41 @@
+#!/usr/bin/env python3
+
 import xmlrpc.client
 import os, sys, shutil, json, subprocess, time, yara, glob, hashlib, datetime, requests
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
-vm_url = "http://192.168.56.2:8080/"
-
-proxy = xmlrpc.client.ServerProxy(vm_url)
+vm_url = "http://192.168.56.2:8000/"
+vm_name = "win10"
 
 def download():
-    with open("pd64.exe", "wb") as handle:
-        handle.write(proxy.download_file().data)
+    proxy = xmlrpc.client.ServerProxy(vm_url)
+    with open("dump.zip", "wb") as handle:
+        try:
+            handle.write(proxy.download_file().data)
+            return True
 
+        except xmlrpc.client.Fault:
+            print(sys.exc_info())
+            return sys.exc_info()
+
+            
 def upload(filename):
+    proxy = xmlrpc.client.ServerProxy(vm_url)
     with open(filename, "rb") as handle:
         binary_data = xmlrpc.client.Binary(handle.read())
-    proxy.upload_file(binary_data, "test.py")
+    if "/" in filename:
+        filename = filename.rsplit("/", 1)[1]
+    print("upload..." + filename)
+    proxy.upload_file(binary_data, filename)
 
 def dump():
+    proxy = xmlrpc.client.ServerProxy(vm_url)
     proxy.dump()
+
+def vm_down():
+    print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
+    print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
 
 args = sys.argv
 
@@ -33,7 +51,6 @@ with open('config.json', 'r') as f:
 
 #make report format
 now = datetime.datetime.today()
-
 result = {"result":{"detail":"", "is_success":False},
           "run_time":config['time'], 
           "mode":config['mode'],
@@ -41,17 +58,81 @@ result = {"result":{"detail":"", "is_success":False},
           "scans":[]
          }
 
-while(1):
-    vm_state = subprocess.check_output(['VBoxManage', "list", "runningvms"])
-    if "win10" in str(vm_state):
-        up_url = vm_url
-        upload("config.json")
-        tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/pssuspend.exe"]
-        for tool_name in tools:
-            upload(tool_name)
-        upload(up_url, "target/" + config['target_file'])
-        dump()
-        break
+file_sha256 = str(hashlib.sha256(open(config['path'],'rb').read()).hexdigest())
 
 
+rules = yara.compile('index.yar')
+matches = rules.match(config['path'])
+
+try:
+    shutil.move(config['path'], "target/")
+except shutil.Error:
+    pass  
+
+result['scans'].append({"sha256":file_sha256, "detect_rule":list(map(str,matches)), "file_name":config['target_file']})
+
+os.mkdir("result/" + str(now.strftime("%Y-%m-%d_%H:%M:%S")))
+
+#print(subprocess.run(['VBoxManage', "startvm", vm_name]))
+
+#while(1):
+#    vm_state = subprocess.check_output(['VBoxManage', "list", "runningvms"])
+#    if vm_name in str(vm_state):
+#        break
+
+upload("config.json")
+tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/pssuspend.exe"]
+
+for tool_name in tools:
+    upload(tool_name)
+
+upload("target/" + config['target_file'])
+
+dump()
+
+ret = download() 
+ 
+if ret == True:
+    shutil.move("dump.zip", "result/")
+    print("dump finish")
+    result["result"]["is_success"] = True
+
+else:
+    print("dump does not exist\n")
+    result["result"]["is_success"] == False
+    result["result"]["detail"] = "dump does not exist"  
+
+vm_down()
+
+if result["result"]["is_success"] == False:
+    print("Unpack fail\n")
+    with open("result/"+ str(now.strftime("%Y-%m-%d_%H:%M:%S")) + "/" +file_sha256+'.json', 'w') as outfile:
+            json.dump(result, outfile, indent=4)
+    print (json.dumps(result, indent=4))
+    os.remove("config.json")
+    collection.update({'_id':ObjectId(args[1])},result)
+    exit()
+
+elif result["result"]["is_success"] == True:
+
+    subprocess.run(['unzip', "dump.zip"], cwd="result")   
+
+files = glob.glob("result/dump/**", recursive=True)
+
+for f in files:
+    if "exe" in f.rsplit(".", 1) or "dll" in f.rsplit(".", 1) or "dmp" in f.rsplit(".", 1):
+	    sha256_hash = str(hashlib.sha256(open(f,'rb').read()).hexdigest())
+	    matches = rules.match(f)
+	    result['scans'].append({"sha256":sha256_hash, "detect_rule":list(map(str,matches)), "file_name":f.rsplit("/", 1)[1]})
+
+print (json.dumps(result, indent=4))
+
+with open("result/dump/"+file_sha256+'.json', 'w') as outfile:
+    json.dump(result, outfile, indent=4)
+
+os.rename("result/dump/", "result/"+str(now.strftime("%Y-%m-%d_%H:%M:%S")))
+os.remove("result/dump.zip")
+os.remove("config.json")
+
+collection.update({'_id':ObjectId(args[1])},result)
 
