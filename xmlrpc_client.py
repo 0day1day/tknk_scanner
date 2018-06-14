@@ -5,7 +5,7 @@ import os, sys, shutil, json, subprocess, time, yara, glob, hashlib, datetime, r
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
-vm_url = "http://192.168.56.2:8000/"
+vm_url = "http://192.168.122.2:8000/"
 vm_name = "win10"
 
 def download():
@@ -34,8 +34,8 @@ def dump():
     proxy.dump()
 
 def vm_down():
-    print(subprocess.call(['VBoxManage', "controlvm", "win10", "poweroff"]))
-    print(subprocess.call(['VBoxManage', "snapshot", "win10", "restorecurrent"]))
+    print(subprocess.call(['virsh', "destroy", vm_name]))
+
 
 args = sys.argv
 
@@ -72,13 +72,6 @@ except shutil.Error:
 result['scans'].append({"sha256":file_sha256, "detect_rule":list(map(str,matches)), "file_name":config['target_file']})
 
 os.mkdir("result/" + str(now.strftime("%Y-%m-%d_%H:%M:%S")))
-
-#print(subprocess.run(['VBoxManage', "startvm", vm_name]))
-
-#while(1):
-#    vm_state = subprocess.check_output(['VBoxManage', "list", "runningvms"])
-#    if vm_name in str(vm_state):
-#        break
 
 upload("config.json")
 tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/pssuspend.exe"]

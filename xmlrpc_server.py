@@ -3,10 +3,10 @@
 from xmlrpc.server import SimpleXMLRPCServer
 import xmlrpc.client
 from ctypes import *
-import sys, time, requests, json, ctypes.wintypes, os, subprocess
+import sys, time, json, ctypes.wintypes, os, subprocess
 from pathlib import Path
 
-vm_ipaddr = "192.168.56.2"
+vm_ipaddr = "192.168.122.2"
 
 def download_file():
      with open("dump.zip", "rb") as handle:
@@ -46,11 +46,11 @@ def dump():
     print("dumping\n")
 
     if config["mode"] == "procdump":
-         subprocess.call(["pssuspend.exe", config["target_file"], "/AcceptEula"])
-         subprocess.call(["procdump.exe", "-ma", config["target_file"], "/AcceptEula"],cwd="dump")
+        subprocess.call(["pssuspend.exe", config["target_file"], "/AcceptEula"])
+        subprocess.call(["procdump.exe", "-ma", config["target_file"], "/AcceptEula"],cwd="dump")
 
     elif config["mode"] == "hollows_hunter":
-        subprocess.call(["pssuspend.exe", config["target_file"]])
+        subprocess.call(["pssuspend.exe", config["target_file"], "/AcceptEula"])
         subprocess.call(["hollows_hunter.exe"],cwd="dump")
 
     elif config["mode"] == "diff":

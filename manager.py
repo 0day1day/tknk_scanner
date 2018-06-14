@@ -41,19 +41,20 @@ class S(SimpleHTTPRequestHandler):
 
         self.wfile.write((str(InsertOneResult.inserted_id)+"\n").encode('utf-8'))
 
-        print(subprocess.run(['VBoxManage', "startvm", vm_name]))
+        print(subprocess.run(['virsh', "snapshot-revert", vm_name, "run_server"]))
 
         while(1):
-            vm_state = subprocess.check_output(['VBoxManage', "list", "runningvms"])
+            vm_state = subprocess.check_output(["virsh", "domstate", vm_name])
             time.sleep(1)
-            if "win10" in str(vm_state):
+            print (vm_state.decode('utf-8'))
+            if "running" in str(vm_state.decode('utf-8')):
                 cmd = [("./xmlrpc_client.py "+str(InsertOneResult.inserted_id))]
                 subprocess.Popen(cmd, shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
                 break
 
 def run(server_class=HTTPServer, handler_class=S, port=8080):
     logging.basicConfig(level=logging.INFO)
-    server_address = ('192.168.56.1', port)
+    server_address = ('192.168.122.1', port)
     httpd = server_class(server_address, handler_class)
     logging.info('Starting httpd...\n')
     try:
