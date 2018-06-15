@@ -41,7 +41,7 @@ class S(SimpleHTTPRequestHandler):
 
         self.wfile.write((str(InsertOneResult.inserted_id)+"\n").encode('utf-8'))
 
-        print(subprocess.run(['virsh', "snapshot-revert", vm_name, "run_server"]))
+        print(subprocess.run(['virsh', "snapshot-revert", vm_name, "--current"]))
 
         while(1):
             vm_state = subprocess.check_output(["virsh", "domstate", vm_name])
