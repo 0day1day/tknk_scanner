@@ -1,7 +1,7 @@
 include "./yara/my_rules/Zeus_Variant.yar"
+include "./yara/my_rules/packer.yar"
 include "./yara/my_rules/DarkVNC.yar"
 include "./yara/my_rules/ZeusPanda.yar"
-include "./yara/my_rules/upx.yar"
 include "./yara/my_rules/Ursnif.yar"
 include "./yara/my_rules/AZORult_t1.yar"
 include "./yara/my_rules/Berbew.yar"
