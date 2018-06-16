@@ -12,4 +12,5 @@
 * https://github.com/Yara-Rules/rules
 * https://github.com/Neo23x0/signature-base
 * https://github.com/mikesxrs/Open-Source-YARA-rules
+* https://github.com/ctxis/CAPE/tree/master/data/yara/CAPE
 * https://malpedia.caad.fkie.fraunhofer.de/
