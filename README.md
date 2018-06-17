@@ -7,6 +7,8 @@
 ## install
 
 ## usage
+### index_gen.py
+generate index.yar
 
 ## reference rules
 * https://github.com/Yara-Rules/rules
