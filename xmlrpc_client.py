@@ -74,7 +74,7 @@ result['scans'].append({"sha256":file_sha256, "detect_rule":list(map(str,matches
 os.mkdir("result/" + str(now.strftime("%Y-%m-%d_%H:%M:%S")))
 
 upload("config.json")
-tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/pssuspend.exe"]
+tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/pssuspend.exe", "tools/mouse_emu.exe"]
 
 for tool_name in tools:
     upload(tool_name)
