@@ -38,7 +38,7 @@ def dump():
         src_set = set(ProcessIds)
 
     subprocess.run(['cmd.exe', "/c", "start", config['target_file']])
-    subprocess.run(['mouse_emu.exe'])
+    subprocess.run(['cmd.exe', "/c", "start", 'mouse_emu.exe'])
 
     print(("wait for unpack %d seconds\n") % config["time"])
         
