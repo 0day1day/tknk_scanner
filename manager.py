@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from http.server import SimpleHTTPRequestHandler, HTTPServer
-import logging, json, subprocess, requests, time
+import logging, json, subprocess, requests, time, shutil, magic, os
 from pymongo import MongoClient
 
 vm_name = "win10"
@@ -24,22 +24,35 @@ class S(SimpleHTTPRequestHandler):
 
         if "/" in json_data['path']:
             target_file = json_data['path'].rsplit("/", 1)[1]
-            json_data.update({'target_file':target_file})
-        else:
-            json_data.update({'target_file':json_data['path']})
+            json_data['target_file'] = target_file
+
+        file_type = magic.from_file("target/"+json_data['target_file'])
+        print(file_type)
+
+        if ("DLL" in file_type) or (("PE32" or"PE32+") not in file_type):
+            print("Invalid File Format!!\nOnly PE Format File (none dll)\n")
+            self.wfile.write((str({"status_code":1, "UUID":None, "msg":"Invalid File Format!!\nOnly PE Format File (none dll)\n"})).encode('utf-8'))
+            return 
+
+        if (("PE32" or "PE32+") in file_type):
+            root, ext = os.path.splitext("target/"+json_data['target_file'])
+            if ext != "exe":
+                print("rename: "+root+".exe")
+                os.rename("target/"+json_data['target_file'], root+".exe")
+                json_data.update({'target_file':json_data['target_file'].split(".")[0]+".exe"})
+                json_data.update({'path':json_data['path'].split(".")[0]+".exe"})
 
         post = {}
         InsertOneResult = collection.insert_one(post)
 
         print(InsertOneResult.inserted_id)
-        print(type(InsertOneResult.inserted_id))
 
         print(json.dumps(json_data, indent=4))
 
         with open('config.json', 'w') as outfile:
             json.dump(json_data, outfile)
 
-        self.wfile.write((str(InsertOneResult.inserted_id)+"\n").encode('utf-8'))
+        self.wfile.write((str({"status_code":0, "UUID":str(InsertOneResult.inserted_id), "msg":"Submission Success!"})).encode('utf-8'))
 
         print(subprocess.run(['virsh', "snapshot-revert", vm_name, "--current"]))
 

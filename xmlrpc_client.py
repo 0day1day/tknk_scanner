@@ -64,11 +64,6 @@ file_sha256 = str(hashlib.sha256(open(config['path'],'rb').read()).hexdigest())
 rules = yara.compile('index.yar')
 matches = rules.match(config['path'])
 
-try:
-    shutil.move(config['path'], "target/")
-except shutil.Error:
-    pass  
-
 result['scans'].append({"sha256":file_sha256, "detect_rule":list(map(str,matches)), "file_name":config['target_file']})
 
 os.mkdir("result/" + str(now.strftime("%Y-%m-%d_%H:%M:%S")))
