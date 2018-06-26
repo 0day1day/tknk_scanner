@@ -10,6 +10,8 @@
 ### index_gen.py
 generate index.yar
 
+### manager.py
+
 ## reference rules
 * https://github.com/Yara-Rules/rules
 * https://github.com/Neo23x0/signature-base
