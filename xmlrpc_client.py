@@ -31,7 +31,11 @@ def upload(filename):
 
 def dump():
     proxy = xmlrpc.client.ServerProxy(vm_url)
-    proxy.dump()
+    try:
+        proxy.dump()
+        return True
+    except:
+        return False
 
 def vm_down():
     print(subprocess.call(['virsh', "destroy", vm_name]))
@@ -76,19 +80,24 @@ for tool_name in tools:
 
 upload("target/" + config['target_file'])
 
-dump()
+ret = dump()
 
-ret = download() 
- 
-if ret == True:
-    shutil.move("dump.zip", "result/")
-    print("dump finish")
-    result["result"]["is_success"] = True
-
-else:
-    print("dump does not exist\n")
+if ret == False:
+    print("TimeoutError: [Errno 110] Connection timed out\n")
     result["result"]["is_success"] == False
-    result["result"]["detail"] = "dump does not exist"  
+    result["result"]["detail"] = "TimeoutError: Connection timed out"  
+else:
+    ret = download() 
+ 
+    if ret == True:
+        shutil.move("dump.zip", "result/")
+        print("dump finish")
+        result["result"]["is_success"] = True
+
+    else:
+        print("dump does not exist\n")
+        result["result"]["is_success"] == False
+        result["result"]["detail"] = "dump does not exist"  
 
 vm_down()
 
