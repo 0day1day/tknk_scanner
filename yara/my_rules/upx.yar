@@ -3,7 +3,8 @@ rule UPX_Packer
     strings:
         $upx0 = "UPX0"
         $upx1 = "UPX1"
+        $upx2 = "UPX!"
 
     condition:
-        $upx0 and $upx1
+        all of them
 }
