@@ -2,4 +2,5 @@
 
 mkdir target result
 chmod 777 target result
-sudo pip3 install yara-pyhton, pymongo
+sudo apt install python3-magic
+sudo pip3 install flask, pymongo

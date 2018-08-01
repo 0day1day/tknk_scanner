@@ -13,7 +13,17 @@ app = Flask(__name__)
 def start_analyze():
     if request.headers['Content-Type'] != 'application/json':
         print(request.headers['Content-Type'])
-        return jsonify(res='error'), 400
+        return jsonify(status_code=1, mesg="Content-Type Error."), 400
+
+    with open("state.json", 'r') as f:
+        state = json.load(f)
+
+    if state['state'] == 1:
+        return jsonify(status_code=1, mesg="It is processing now. Wait for analysis.")
+    elif state['state'] == 0:
+        state['state'] = 1
+        with open("state.json", 'w') as f:
+            json.dump(state, f)
 
     json_data = request.json
 
@@ -56,8 +66,8 @@ def file_upload():
     print(file_type)
 
     if ("DLL" in file_type) or (("PE32" or"PE32+") not in file_type):
-            print("Invalid File Format!!\nOnly PE Format File (none dll)\n")
-            return jsonify(status_code=1, mesg="Invalid File Format!!\nOnly PE Format File (none dll)\n")
+            print("Invalid File Format!! Only PE Format File(none dll).")
+            return jsonify(status_code=1, mesg="Invalid File Format!! Only PE Format File(none dll).")
 
     if (("PE32" or "PE32+") in file_type):
         root, ext = os.path.splitext("target/"+filename)
@@ -76,12 +86,16 @@ def show_result(uuid=None):
 
 @app.errorhandler(404)
 def not_found(error):
-    return make_response(jsonify(status_code=1, mesg='Not found'), 404)
+    return make_response(jsonify(status_code=1, mesg='Not found.'), 404)
 
 if __name__ == '__main__':
     client = MongoClient('localhost', 27017)
     db = client.scan_database
     collection = db.scan_collection
+
+    state={"state":0}
+    with open("state.json", 'w') as f:
+        json.dump(state, f)
 
     app.run(host='192.168.122.1', port=8080)
     

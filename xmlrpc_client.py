@@ -8,6 +8,15 @@ from bson.objectid import ObjectId
 vm_url = "http://192.168.122.2:8000/"
 vm_name = "win10"
 
+def change_state():
+    with open("state.json", 'r') as f:
+        state = json.load(f)
+
+    state['state'] = 0
+
+    with open("state.json", 'w') as f:
+        json.dump(state, f)
+
 def download():
     proxy = xmlrpc.client.ServerProxy(vm_url)
     with open("dump.zip", "wb") as handle:
@@ -110,6 +119,7 @@ if result["result"]["is_success"] == False:
     print (json.dumps(result, indent=4))
     os.remove("config.json")
     collection.update({u'UUID':uid},result)
+    change_state()  
     exit()
 
 elif result["result"]["is_success"] == True:
@@ -134,4 +144,6 @@ os.remove("result/dump.zip")
 os.remove("config.json")
 
 collection.update({u'UUID':uid},result)
+change_state()
+
 
