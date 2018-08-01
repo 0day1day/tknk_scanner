@@ -1,4 +1,4 @@
-# tknk_unpacker
+# tknk_scanner
 
 ## Dependencies
 * [hollows_hunter](https://github.com/hasherezade/hollows_hunter)
