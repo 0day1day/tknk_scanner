@@ -53,17 +53,19 @@ collection = db.scan_collection
 with open('config.json', 'r') as f:
     config = json.load(f)
 
+uid=args[1]
+
 #make report format
 now = datetime.datetime.today()
 result = {"result":{"detail":"", "is_success":False},
           "run_time":config['time'], 
           "mode":config['mode'],
           "timestamp":str(now.isoformat()),
-          "scans":[]
+          "scans":[],
+          "UUID":uid
          }
 
 file_sha256 = str(hashlib.sha256(open(config['path'],'rb').read()).hexdigest())
-
 
 rules = yara.compile('index.yar')
 matches = rules.match(config['path'])
@@ -107,7 +109,7 @@ if result["result"]["is_success"] == False:
             json.dump(result, outfile, indent=4)
     print (json.dumps(result, indent=4))
     os.remove("config.json")
-    collection.update({'_id':ObjectId(args[1])},result)
+    collection.update({u'UUID':uid},result)
     exit()
 
 elif result["result"]["is_success"] == True:
@@ -131,5 +133,5 @@ os.rename("result/dump/", "result/"+str(now.strftime("%Y-%m-%d_%H:%M:%S")))
 os.remove("result/dump.zip")
 os.remove("config.json")
 
-collection.update({'_id':ObjectId(args[1])},result)
+collection.update({u'UUID':uid},result)
 
