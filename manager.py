@@ -13,7 +13,7 @@ app = Flask(__name__)
 def start_analyze():
     if request.headers['Content-Type'] != 'application/json':
         print(request.headers['Content-Type'])
-        return jsonify(status_code=1, mesg="Content-Type Error."), 400
+        return jsonify(status_code=2, mesg="Content-Type Error.")
 
     with open("state.json", 'r') as f:
         state = json.load(f)
@@ -43,7 +43,8 @@ def start_analyze():
 
     print({"status_code":0, "UUID":uid, "mesg":"Submission Success!"})
 
-    print(subprocess.run(['virsh', "snapshot-revert", VM_NAME, "--current"]))
+    cmd=[("virsh snapshot-revert " + VM_NAME + " --current")]
+    print(subprocess.Popen(cmd, shell=True, stdin=None, stdout=None, stderr=None, close_fds=True))
 
     cmd = [("./xmlrpc_client.py "+ uid)]
     subprocess.Popen(cmd, shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
@@ -61,7 +62,7 @@ def file_upload():
 
     if ("DLL" in file_type) or (("PE32" or"PE32+") not in file_type):
             print("Invalid File Format!! Only PE Format File(none dll).")
-            return jsonify(status_code=1, mesg="Invalid File Format!! Only PE Format File(none dll).")
+            return jsonify(status_code=2, mesg="Invalid File Format!! Only PE Format File(none dll).")
 
     if (("PE32" or "PE32+") in file_type):
         root, ext = os.path.splitext("target/"+filename)
@@ -74,13 +75,15 @@ def file_upload():
 @app.route('/result/<uuid>')
 def show_result(uuid=None):
     uid= request.args.get('uuid')
-    result = str(list(collection.find({u"UUID":uid}))[0])
+    result = list(collection.find({u"UUID":uid}))[0]
+    result.pop('_id')
+
     return jsonify(status_code=0, result=result)
     
 
 @app.errorhandler(404)
 def not_found(error):
-    return make_response(jsonify(status_code=1, mesg='Not found.'), 404)
+    return make_response(jsonify(status_code=2, mesg='Not found.'), 404)
 
 if __name__ == '__main__':
     client = MongoClient('localhost', 27017)

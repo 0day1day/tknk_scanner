@@ -57,7 +57,7 @@ if __name__ == '__main__':
         vm_state = subprocess.check_output(["virsh", "domstate", VM_NAME])
         time.sleep(1)
         c+=1
-        print (vm_state.decode('utf-8'))
+        #print (vm_state.decode('utf-8'))
         if "running" in str(vm_state.decode('utf-8')):
             break
         if c == 60:
