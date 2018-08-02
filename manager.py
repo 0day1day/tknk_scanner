@@ -45,14 +45,8 @@ def start_analyze():
 
     print(subprocess.run(['virsh', "snapshot-revert", VM_NAME, "--current"]))
 
-    while(1):
-        vm_state = subprocess.check_output(["virsh", "domstate", VM_NAME])
-        time.sleep(1)
-        print (vm_state.decode('utf-8'))
-        if "running" in str(vm_state.decode('utf-8')):
-            cmd = [("./xmlrpc_client.py "+ uid)]
-            subprocess.Popen(cmd, shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
-            break
+    cmd = [("./xmlrpc_client.py "+ uid)]
+    subprocess.Popen(cmd, shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
 
     return jsonify(status_code=0, UUID=uid, mesg="Submission Success!")
 
