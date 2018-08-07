@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import json, subprocess, requests, time, shutil, magic, os, uuid
+from pathlib import Path
 from pymongo import MongoClient
 from flask import Flask, jsonify, request, url_for, abort, Response
 
@@ -65,10 +66,10 @@ def file_upload():
             return jsonify(status_code=2, mesg="Invalid File Format!! Only PE Format File(none dll).")
 
     if (("PE32" or "PE32+") in file_type):
-        root, ext = os.path.splitext("target/"+filename)
-        if ext != "exe":
-            os.rename("target/"+filename, root+".exe")
-            filename=root+".exe"
+        path = Path("target/"+filename)
+        if path.suffix != "exe":
+            os.rename("target/"+path.name, path.stem+".exe")
+            filename=path.stem+".exe"
 
     return jsonify(status_code=0, path=UPLOAD_FOLDER+filename)
 
@@ -94,6 +95,6 @@ if __name__ == '__main__':
     with open("state.json", 'w') as f:
         json.dump(state, f)
 
-    app.run(host='192.168.122.1', port=8080)
+    app.run(host='192.168.122.1', port=8000)
     
 
