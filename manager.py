@@ -32,20 +32,30 @@ def start_analyze():
     uid = str(uuid.uuid4())
     post = {"UUID":uid}
 
-    InsertOneResult = collection.insert_one(post)
-
-    print(InsertOneResult.inserted_id)
+    collection.insert_one(post)
 
     json_data['target_file']=json_data['path'].split("/")[1]
     print(json.dumps(json_data, indent=4))
-
     with open('config.json', 'w') as outfile:
         json.dump(json_data, outfile)
 
-    print({"status_code":0, "UUID":uid, "mesg":"Submission Success!"})
-
     cmd=[("virsh snapshot-revert " + VM_NAME + " --current")]
-    print(subprocess.Popen(cmd, shell=True, stdin=None, stdout=None, stderr=None, close_fds=True))
+    p = (subprocess.Popen(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True))
+    print("----------------")
+    output = p.stderr.read().decode('utf-8')
+    print(output)
+
+    if "busy" in output:
+        state={"state":0}
+        with open("state.json", 'w') as f:
+            json.dump(state, f)
+        return jsonify(status_code=2, mesg="failed to initialize KVM: Device or resource busy")
+        
+    elif "Domain" in output:
+        state={"state":0}
+        with open("state.json", 'w') as f:
+            json.dump(state, f)
+        return jsonify(status_code=2, mesg="Domain snapshot not found: the domain does not have a current snapshot")
 
     cmd = [("./xmlrpc_client.py "+ uid)]
     subprocess.Popen(cmd, shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
