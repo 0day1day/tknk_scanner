@@ -3,7 +3,7 @@
 import json, subprocess, requests, time, shutil, magic, os, uuid
 from pathlib import Path
 from pymongo import MongoClient
-from flask import Flask, jsonify, request, url_for, abort, Response
+from flask import Flask, jsonify, request, url_for, abort, Response, make_response
 
 VM_NAME="win10"
 UPLOAD_FOLDER="target/" 
@@ -85,8 +85,10 @@ def file_upload():
 
 @app.route('/result/<uuid>')
 def show_result(uuid=None):
-    uid= request.args.get('uuid')
-    result = list(collection.find({u"UUID":uid}))[0]
+    print(uuid)
+    #uid= request.args.get('uuid')
+    #print(uid)
+    result = list(collection.find({u"UUID":uuid}))[0]
     result.pop('_id')
 
     return jsonify(status_code=0, result=result)
