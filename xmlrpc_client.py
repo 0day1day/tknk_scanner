@@ -5,8 +5,11 @@ import os, sys, shutil, json, subprocess, time, yara, glob, hashlib, datetime, r
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
-VM_URL = "http://192.168.122.2:8000/"
-VM_NAME = "win10"
+with open("tknk.conf", 'r') as f:
+    tknk_conf = json.load(f)
+
+VM_NAME=tknk_conf['vm_name']
+VM_URL=tknk_conf['vm_url']
 
 def change_state():
     with open("state.json", 'r') as f:

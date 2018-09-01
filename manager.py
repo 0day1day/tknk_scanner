@@ -5,7 +5,10 @@ from pathlib import Path
 from pymongo import MongoClient
 from flask import Flask, jsonify, request, url_for, abort, Response, make_response
 
-VM_NAME="win10"
+with open("tknk.conf", 'r') as f:
+    tknk_conf = json.load(f)
+
+VM_NAME=tknk_conf['vm_name']
 UPLOAD_FOLDER="target/" 
 
 app = Flask(__name__)
@@ -28,7 +31,6 @@ def start_analyze():
 
     json_data = request.json
 
-    #post={}
     uid = str(uuid.uuid4())
     post = {"UUID":uid}
 
@@ -41,7 +43,6 @@ def start_analyze():
 
     cmd=[("virsh snapshot-revert " + VM_NAME + " --current")]
     p = (subprocess.Popen(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True))
-    print("----------------")
     output = p.stderr.read().decode('utf-8')
     print(output)
 
