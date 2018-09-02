@@ -50,7 +50,8 @@ $ sudo python setup.py install
 4. Set to the IP address described in vm_url.
 5. Copy and run `xmlrpc_server.py`
 
-## Setting Web-UI
+### Setting Web-UI
+...
 
 ## Usage
 
@@ -61,12 +62,13 @@ Upload the file to be scanned.
 Sets the time to start runing dump tools.
 The default is 180 seconds.
 
-* mode  
-   * hollows_hunter
-   * prodump
-   * diff(procdump)
+* mode
+    * hollows_hunter
+    * prodump
+    * diff(procdump)
 
 ## License
+tknk_scanner is open-sourced software licensed under the MIT License
 
 ## Thanks
 @hasherezade - [hollows_hunter](https://github.com/hasherezade/hollows_hunter)
