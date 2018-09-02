@@ -54,16 +54,14 @@ $ sudo python setup.py install
 
 ## Usage
 
-* File upload
-
+* File upload  
 Upload the file to be scanned.
 
-* time
-
+* time  
 Sets the time to start runing dump tools.
 The default is 180 seconds.
 
-* mode
+* mode  
    * hollows_hunter
    * prodump
    * diff(procdump)
