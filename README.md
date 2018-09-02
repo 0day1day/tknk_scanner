@@ -55,9 +55,11 @@ $ sudo python setup.py install
 ## Usage
 
 * File upload
+
 Upload the file to be scanned.
 
 * time
+
 Sets the time to start runing dump tools.
 The default is 180 seconds.
 
