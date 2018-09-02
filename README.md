@@ -71,6 +71,6 @@ The default is 180 seconds.
 tknk_scanner is open-sourced software licensed under the MIT License
 
 ## Thanks
-@hasherezade - [hollows_hunter](https://github.com/hasherezade/hollows_hunter)
-Sysinternals - https://docs.microsoft.com/en-us/sysinternals/
-yara-python -  https://github.com/VirusTotal/yara-python
+@hasherezade - [hollows_hunter](https://github.com/hasherezade/hollows_hunter)  
+Sysinternals - https://docs.microsoft.com/en-us/sysinternals/  
+yara-python -  https://github.com/VirusTotal/yara-python  
