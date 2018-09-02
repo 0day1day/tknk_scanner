@@ -6,8 +6,8 @@ tknk_scanner is community-based integrated malware identification system. You ca
 
 ## Features
 * Automatic identification and classification of malware
-    * Scan the malware's original code with yara.
-* Dump original code of malware
+    * Scan the original code of malware with yara.
+* Dumps original code of malware
     * You can easily get the original code. 
 * User-friendly Web-UI
     * Users can submit malware and check scan results using the Web-UI.
