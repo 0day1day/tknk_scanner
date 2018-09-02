@@ -10,7 +10,7 @@ tknk_scanner is community-based integrated malware identification system. You ca
 * Dump original code of malware
     * You can easily get the original code. 
 * User-friendly Web-UI
-    * Users can submit malware and check scan results using the web interface.
+    * Users can submit malware and check scan results using the Web-UI.
 
 
 ## Requirements
@@ -50,18 +50,21 @@ $ sudo python setup.py install
 4. Set to the IP address described in vm_url.
 5. Copy and run `xmlrpc_server.py`
 
+## Setting Web-UI
+
 ## Usage
 
-### time
+* File upload
+Upload the file to be scanned.
+
+* time
 Sets the time to start runing dump tools.
 The default is 180 seconds.
 
-### mode
-
-* hollows_hunter
-* prodump
-* diff(procdump)
-
+* mode
+   * hollows_hunter
+   * prodump
+   * diff(procdump)
 
 ## License
 
