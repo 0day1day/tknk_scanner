@@ -2,5 +2,5 @@
 
 mkdir target result
 chmod 777 target result
-sudo apt install python3-magic
-sudo pip3 install flask, pymongo
+sudo apt install python3 python3-magic kvm virt-manager libvirt-bin bridge-utils mongodb
+sudo pip3 install -r requirements.txt

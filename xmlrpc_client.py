@@ -3,7 +3,6 @@
 import xmlrpc.client
 import os, sys, shutil, json, subprocess, time, yara, glob, hashlib, datetime, requests
 from pymongo import MongoClient
-from bson.objectid import ObjectId
 
 with open("tknk.conf", 'r') as f:
     tknk_conf = json.load(f)
