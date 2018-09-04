@@ -22,25 +22,28 @@ tknk_scanner is community-based integrated malware identification system. You ca
 
 ### Preparing the Host
 1. git clone *repository_url*
-2. Install Python libraries 
-  `$ sudo pip install -r requirements.txt`
+2. Run `setup/setup.sh`
 3. Install yara-python
   ```
-  $ git clone --recursive https://github.com/VirusTotal/yara-python
+$ git clone --recursive https://github.com/VirusTotal/yara-python
 $ cd yara-python
 $ python setup.py build
 $ sudo python setup.py install
 ```
-4.  Run `setup/setup.sh`
-5. Edit tknk.conf
+4. Edit tknk.conf
     * vm_name
     * vm_url
-6. Download Tools and copy to `tools/`
+5. Download Tools and copy to `tools/`
     * [hollows_hunter](https://github.com/hasherezade/hollows_hunter)
     * [PsSuspend](https://docs.microsoft.com/en-us/sysinternals/downloads/pssuspend)
     * [ProcDump](https://docs.microsoft.com/en-us/sysinternals/downloads/procdump)
-7. Save yara rules
-  Save yara rules in "rules" folder.
+6. Set yara rules
+  Save yara rules in "rules" folder. You need to add the rule to index.yar.  
+  We have a script. Please add a path to `index_gen.py` as follows.  
+  ```
+  paths = []
+  ```
+  And run `python3 index_gen.py`.
 
 
 ### Preparing the Guest
@@ -49,6 +52,7 @@ $ sudo python setup.py install
 3. Install Python 3.6
 4. Set to the IP address described in vm_url.
 5. Copy and run `xmlrpc_server.py`
+6. Make snapshot
 
 ### Setting Web-UI
 ...
