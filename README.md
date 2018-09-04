@@ -37,7 +37,7 @@ $ sudo python setup.py install
     * [hollows_hunter](https://github.com/hasherezade/hollows_hunter)
     * [PsSuspend](https://docs.microsoft.com/en-us/sysinternals/downloads/pssuspend)
     * [ProcDump](https://docs.microsoft.com/en-us/sysinternals/downloads/procdump)
-6. Set yara rules
+6. Set yara rules  
   Save yara rules in "rules" folder. You need to add the rule to index.yar.  
   We have a script. Please add a path to `index_gen.py` as follows.  
   ```
