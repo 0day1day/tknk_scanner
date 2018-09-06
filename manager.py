@@ -79,7 +79,7 @@ def file_upload():
     if (("PE32" or "PE32+") in file_type):
         path = Path("target/"+filename)
         if path.suffix != "exe":
-            os.rename("target/"+path.name, path.stem+".exe")
+            os.rename("target/"+path.name, "target/"+path.stem+".exe")
             filename=path.stem+".exe"
 
     return jsonify(status_code=0, path=UPLOAD_FOLDER+filename)
