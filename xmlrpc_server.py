@@ -57,7 +57,6 @@ def dump():
         tag_set = set(ProcessIds)
 
         diff_ProcessIds = list(src_set ^ tag_set)
-        print(diff_ProcessIds)
 
         new_ProcessIds = []
 
@@ -67,8 +66,7 @@ def dump():
                 if "suspended." in str(proc_state):
                     new_ProcessIds.append(pid)
             except subprocess.CalledProcessError:
-                print(pid)
-        print(new_ProcessIds)
+                pass
         for pid in new_ProcessIds:
             subprocess.call(["procdump.exe", "-ma", str(pid), "/AcceptEula"],cwd="dump")
 

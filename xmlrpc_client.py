@@ -8,10 +8,8 @@ from pprint import pprint
 with open("tknk.conf", 'r') as f:
     tknk_conf = json.load(f)
 
-#VM_NAME=tknk_conf['vm_name']
-#VM_URL=tknk_conf['vm_url']
-VM_URL = "http://192.168.122.2:8000/"
-VM_NAME = "win10"
+VM_NAME=tknk_conf['vm_name']
+VM_URL=tknk_conf['vm_url']
 
 def change_state():
     with open("state.json", 'r') as f:
@@ -114,7 +112,7 @@ if __name__ == '__main__':
 
     if ret == False:
         print("Connection error\n")
-        result["result"]["is_success"] == False
+        is_success == False
         result["result"]["detail"] = "Connection error"  
     else:
         ret = download() 
@@ -122,27 +120,31 @@ if __name__ == '__main__':
         if ret == True:
             shutil.move("dump.zip", "result/")
             print("dump finish")
-            result["result"]["is_success"] = True
+            is_success = True
 
         else:
-            print("dump does not exist\n")
-            result["result"]["is_success"] == False
-            result["result"]["detail"] = "dump does not exist"  
+            is_success = False
+            result["result"]["detail"] = "dump file does not exist"  
 
     vm_down()
 
-    if result["result"]["is_success"] == False:
-        print("Unpack fail\n")
+    if is_success == False:
+        for scan in result["scans"]:
+            if scan["detect_rule"] != []:
+                result["result"]["is_success"] = True
+                result["result"]["detail"] = "Detected with yara rule!"  
+                break
+
         with open("result/"+ str(now.strftime("%Y-%m-%d_%H:%M:%S")) + "/" +file_sha256+'.json', 'w') as outfile:
                 json.dump(result, outfile, indent=4)
+
         print (json.dumps(result, indent=4))
-        #os.remove("config.json")
+        os.remove("config.json")
         collection.update({u'UUID':uid},result)
         change_state()  
         exit()
 
-    elif result["result"]["is_success"] == True:
-
+    elif is_success == True:
         subprocess.run(['unzip', "dump.zip"], cwd="result")   
 
     files = glob.glob("result/dump/**", recursive=True)
@@ -153,6 +155,12 @@ if __name__ == '__main__':
 	        matches = rules.match(f)
 	        result['scans'].append({"sha256":sha256_hash, "detect_rule":list(map(str,matches)), "file_name":f.rsplit("/", 1)[1]})
 
+    for scan in result["scans"]:
+        if scan["detect_rule"] != []:
+            result["result"]["is_success"] = True
+            result["result"]["detail"] = "Detected with yara rule!" 
+            break
+
     print (json.dumps(result, indent=4))
 
     with open("result/dump/"+file_sha256+'.json', 'w') as outfile:
@@ -160,7 +168,7 @@ if __name__ == '__main__':
 
     os.rename("result/dump/", "result/"+str(now.strftime("%Y-%m-%d_%H:%M:%S")))
     os.remove("result/dump.zip")
-    #os.remove("config.json")
+    os.remove("config.json")
 
     collection.update({u'UUID':uid},result)
     change_state()

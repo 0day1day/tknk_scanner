@@ -8,8 +8,7 @@ from flask import Flask, jsonify, request, url_for, abort, Response, make_respon
 with open("tknk.conf", 'r') as f:
     tknk_conf = json.load(f)
 
-#VM_NAME=tknk_conf['vm_name']
-VM_NAME = "win10"
+VM_NAME=tknk_conf['vm_name']
 UPLOAD_FOLDER="target/" 
 
 app = Flask(__name__)
@@ -86,7 +85,7 @@ def file_upload():
 
     return jsonify(status_code=0, path=UPLOAD_FOLDER+filename)
 
-@app.route('/result/<uuid>')
+@app.route('/results/<uuid>')
 def show_result(uuid=None):
     print(uuid)
 
@@ -96,7 +95,7 @@ def show_result(uuid=None):
     if "scans" in result:
         return jsonify(status_code=0, result=result)
     else:
-        return make_response(jsonify(status_code=2, message='Analysing.'), 206)
+        return make_response(jsonify(status_code=1, message='Analysing.'), 206)
         
     
 
