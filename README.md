@@ -2,7 +2,7 @@ tknk_scanner
 ===
 The original code of a malware must be scanned using YARA rules after processing with a debugger (or other means) to account for obfuscated malware binaries. This is a complicated process and requires an extensive malware analysis environment. The tknk_scanner is a community-based integrated malware identification system, which aims to easily identify malware families by automating this process using an integration of open source community-based tools and freeware. The original malware code can be scanned with  with your own YARA rules by submitting the malware in PE format to the scanner. tknk_scanner can thus support surface analysis performed by SOC operators, CSIRT members, and malware analysts.
 
-![tknk02](https://user-images.githubusercontent.com/18203311/45241739-810d5b00-b328-11e8-90ee-8c2aec68269c.png)
+![tknk02](https://user-images.githubusercontent.com/18203311/45243786-12340000-b330-11e8-8337-57d0b7effccc.png)
 
 ## Features
 * Automatic identification and classification of malware
@@ -48,12 +48,17 @@ $ sudo python3 setup.py install
 6. Make snapshot
 
 ### Setting Web-UI
-...
-
-![tknk01](https://user-images.githubusercontent.com/18203311/45241973-58d22c00-b329-11e8-95b4-3e42a9583759.png)
+```
+cd frontend/
+npm install
+npm run generate
+cd ../
+sudo move -f tknk-scanner.nginx.conf /etc/nginx/sites-available/defalt
+sudo systemctl nginx restart
+```
 
 ## Usage
-
+![tknk01](https://user-images.githubusercontent.com/18203311/45243627-9043d700-b32f-11e8-8b4d-62eed195b26c.PNG)
 * File upload  
 Upload the file to be scanned.
 

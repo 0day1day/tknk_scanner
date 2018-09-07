@@ -2,7 +2,7 @@
 <div class="result-container">
   <div class="progress-message" v-if="is_processing">
     <i class="fas fa-spinner fa-spin fa-10x"></i>
-    <p>Now analysing ...</p>
+    <p>Now analyzing ...</p>
   </div>
   <div class="result-message" v-if="!is_processing">
     <b-container>
@@ -28,7 +28,11 @@
       </b-row>
       <b-row>
         <b-col>
-          <b-table :items="dropped_files" class="summary-table"></b-table>
+          <b-table :items="dropped_files" class="summary-table">
+            <template slot="detect_rule" slot-scope="data">
+              <b-badge variant="danger" v-for="(l, k) in data.value" :key="k" class="detect-label">{{ l }}</b-badge>
+            </template>
+          </b-table>
         </b-col>
       </b-row>
     </b-container>
@@ -112,6 +116,8 @@
         color #00ff00
       .status-fail
         color #ff3300
+  .detect-label
+    margin 0 0.5em
 </style>
 <style lang="stylus">
   .table

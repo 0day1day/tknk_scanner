@@ -1,6 +1,6 @@
 # lucia
 
-> \"Lucia\" is a frontend application of the Tknk_scanner.
+> \"Lucia\" is a frontend application of the tknk_scanner.
 
 ## Build Setup
 

@@ -43,6 +43,14 @@ module.exports = {
   axios: {
     baseURL: "/api"
   },
+  proxy: {
+    '/api/': {
+      'target': 'http://localhost:8000/',
+      'pathRewrite': {
+        '^/api': '/'
+      }
+    }
+  },
   css: [
    '@fortawesome/fontawesome-free-webfonts',
    '@fortawesome/fontawesome-free-webfonts/css/fa-brands.css',
