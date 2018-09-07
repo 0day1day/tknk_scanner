@@ -48,7 +48,14 @@ $ sudo python3 setup.py install
 6. Make snapshot
 
 ### Setting Web-UI
-...
+```
+cd frontend/
+npm install
+npm run generate
+cd ../
+sudo move -f tknk-scanner.nginx.conf /etc/nginx/sites-available/defalt
+sudo systemctl nginx restart
+```
 
 ![tknk01](https://user-images.githubusercontent.com/18203311/45241973-58d22c00-b329-11e8-95b4-3e42a9583759.png)
 
