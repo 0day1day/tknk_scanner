@@ -24,7 +24,7 @@ The original code of a malware must be scanned using YARA rules after processing
   ```
 $ git clone --recursive https://github.com/VirusTotal/yara-python
 $ cd yara-python
-$ python setup.py build
+$ python3 setup.py build
 $ sudo python setup.py install
 ```
 4. Edit tknk.conf
