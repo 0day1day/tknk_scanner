@@ -50,7 +50,7 @@ $ sudo python3 setup.py install
 ### Setting Web-UI
 ...
 
-![tknk01](https://user-images.githubusercontent.com/18203311/45241722-7357d580-b328-11e8-8e6a-562cee5f21c0.PNG)
+![tknk01](https://user-images.githubusercontent.com/18203311/45241973-58d22c00-b329-11e8-95b4-3e42a9583759.png)
 
 ## Usage
 
