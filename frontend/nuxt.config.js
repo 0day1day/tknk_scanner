@@ -3,11 +3,12 @@ module.exports = {
   ** Headers of the page
   */
   head: {
-    title: 'lucia',
+    title: 'tknk_Scanner',
+    mode: 'spa',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: '\"Lucia\" is a frontend application of the Tknk_scanner.' }
+      { hid: 'description', name: 'description', content: 'tknk_scanner is community-based integrated malware identification system' }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
@@ -38,10 +39,24 @@ module.exports = {
   modules: [
     '@nuxtjs/proxy',
     '@nuxtjs/axios',
-    'nuxt-buefy',
+    'bootstrap-vue/nuxt',
   ],
+  proxy: {
+    '/api/': {
+      'target': 'http://localhost:8000/',
+      'pathRewrite': {
+        '^/api': '/'
+      }
+    }
+  },
   axios: {
-
-  }
-}
+    baseURL: "/api"
+  },
+  css: [
+   '@fortawesome/fontawesome-free-webfonts',
+   '@fortawesome/fontawesome-free-webfonts/css/fa-brands.css',
+   '@fortawesome/fontawesome-free-webfonts/css/fa-regular.css',
+   '@fortawesome/fontawesome-free-webfonts/css/fa-solid.css',
+  ]
+};
 

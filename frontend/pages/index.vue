@@ -1,30 +1,19 @@
 <template>
   <section class="container">
-    <nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <h1>palloc</h1>
-  </div>
-  <div class="navbar-menu">
-    <a class="navbar-link">
-    Docs
-  </a>
-  </div>
-</nav>
+    <upload-form />
   </section>
 </template>
 
 <script>
-import AppLogo from '~/components/AppLogo.vue'
+import UploadForm from '~/components/UploadForm'
 
-export default {
-  components: {
-    AppLogo
+  export default {
+    components: {
+      UploadForm
+    }
   }
-}
 </script>
 
-<style lang="stylus">
-div
-  background-color gray
+<style lang="stylus" scoped>
 </style>
 

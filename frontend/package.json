@@ -13,10 +13,11 @@
     "precommit": "npm run lint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free-webfonts": "^1.0.9",
     "@nuxtjs/axios": "^5.3.1",
     "@nuxtjs/proxy": "^1.2.4",
+    "bootstrap-vue": "^2.0.0-rc.11",
     "nuxt": "^1.0.0",
-    "nuxt-buefy": "^0.1.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2"
   },
