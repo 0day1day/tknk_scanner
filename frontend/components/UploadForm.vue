@@ -51,8 +51,6 @@
     },
     computed: {
       can_upload() {
-        console.log("1: " + !this.is_uploading);
-        console.log("2: " + (this.form.file !== null && this.form.mode !== null && this.form.time !== null));
         return !this.is_uploading && (this.form.file !== null && this.form.mode !== null && this.form.time !== null);
       },
       get_variant() {

@@ -24,7 +24,7 @@
 <style lang="stylus" scoped>
   .navbar
     height 60px
-    min-width
+    min-width 100%
     background-color #2c2c2c
     border-bottom 1px solid #00ff00
     img

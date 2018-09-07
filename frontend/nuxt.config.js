@@ -37,18 +37,9 @@ module.exports = {
     }
   },
   modules: [
-    '@nuxtjs/proxy',
     '@nuxtjs/axios',
     'bootstrap-vue/nuxt',
   ],
-  proxy: {
-    '/api/': {
-      'target': 'http://localhost:8000/',
-      'pathRewrite': {
-        '^/api': '/'
-      }
-    }
-  },
   axios: {
     baseURL: "/api"
   },
