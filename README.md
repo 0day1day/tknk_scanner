@@ -55,7 +55,7 @@ Upload the file to be scanned.
 
 * time  
 Sets the time to start runing dump tools.
-The default is 180 seconds.
+The default is 120 seconds.
 
 * mode
     * hollows_hunter  
