@@ -1,8 +1,6 @@
 tknk_scanner
 ===
-
-tknk_scanner is community-based integrated malware identification system. You can scan the original code of malware with your own yara rules just by submit malware of PE format to tknk_scanner. Normally, you need to scan using yara after dumping the original code with a debugger etc for obfuscated malware binaries.This process is complicated and requires well-equipped malware analyzing environment. tknk_scanner can be easily identify malware families by automating that process. We integrate open source community based tools and freeware to achieve them. In this way, tknk_scanner can support surface analysis of SOC operators, CSIRT members and malware analysts.
-
+The original code of a malware must be scanned using YARA rules after processing with a debugger (or other means) to account for obfuscated malware binaries. This is a complicated process and requires an extensive malware analysis environment. The tknk_scanner is a community-based integrated malware identification system, which aims to easily identify malware families by automating this process using an integration of open source community-based tools and freeware. The original malware code can be scanned with  with your own YARA rules by submitting the malware in PE format to the scanner. tknk_scanner can thus support surface analysis performed by SOC operators, CSIRT members, and malware analysts.
 
 ## Features
 * Automatic identification and classification of malware
@@ -11,7 +9,6 @@ tknk_scanner is community-based integrated malware identification system. You ca
     * You can easily get the original code. 
 * User-friendly Web-UI
     * Users can submit malware and check scan results using the Web-UI.
-
 
 ## Requirements
 * python 3.5 or later
@@ -38,13 +35,7 @@ $ sudo python setup.py install
     * [PsSuspend](https://docs.microsoft.com/en-us/sysinternals/downloads/pssuspend)
     * [ProcDump](https://docs.microsoft.com/en-us/sysinternals/downloads/procdump)
 6. Set yara rules  
-  Save yara rules in "rules" folder. You need to add the rule to index.yar.  
-  We have a script. Please add a path to `index_gen.py` as follows.  
-  ```
-  paths = []
-  ```
-  And run `python3 index_gen.py`.
-
+  Save yara rules in "rules" folder. You need to add the rule to index.yar.
 
 ### Preparing the Guest
 1. Install Windows on `KVM`
@@ -68,7 +59,9 @@ The default is 180 seconds.
 
 * mode
     * hollows_hunter
+        Using [hollows_hunter](https://github.com/hasherezade/hollows_hunter) 
     * prodump
+        Using procdump dump
     * diff(procdump)
 
 ## License
