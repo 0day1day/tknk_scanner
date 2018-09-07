@@ -58,11 +58,11 @@ Sets the time to start runing dump tools.
 The default is 180 seconds.
 
 * mode
-    * hollows_hunter
+    * hollows_hunter  
         Using [hollows_hunter](https://github.com/hasherezade/hollows_hunter) 
-    * prodump
+    * prodump  
         Using procdump dump
-    * diff(procdump)
+    * diff(procdump)  
 
 ## License
 tknk_scanner is open-sourced software licensed under the MIT License
