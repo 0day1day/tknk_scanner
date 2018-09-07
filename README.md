@@ -59,10 +59,11 @@ The default is 180 seconds.
 
 * mode
     * hollows_hunter  
-        Using [hollows_hunter](https://github.com/hasherezade/hollows_hunter) 
+        Using [hollows_hunter](https://github.com/hasherezade/hollows_hunter).
     * prodump  
-        Using procdump dump
+        Using procdump dump.
     * diff(procdump)  
+        Dump the newly created process while running with procdump.
 
 ## License
 tknk_scanner is open-sourced software licensed under the MIT License
