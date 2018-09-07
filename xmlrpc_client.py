@@ -3,12 +3,15 @@
 import xmlrpc.client
 import os, sys, shutil, json, subprocess, time, yara, glob, hashlib, datetime, requests
 from pymongo import MongoClient
+from pprint import pprint
 
 with open("tknk.conf", 'r') as f:
     tknk_conf = json.load(f)
 
-VM_NAME=tknk_conf['vm_name']
-VM_URL=tknk_conf['vm_url']
+#VM_NAME=tknk_conf['vm_name']
+#VM_URL=tknk_conf['vm_url']
+VM_URL = "http://192.168.122.2:8000/"
+VM_NAME = "win10"
 
 def change_state():
     with open("state.json", 'r') as f:
@@ -106,11 +109,13 @@ if __name__ == '__main__':
     upload("target/" + config['target_file'])
 
     ret = dump()
+    print("ret===============================")
+    pprint(ret)
 
     if ret == False:
-        print("TimeoutError: [Errno 110] Connection timed out\n")
+        print("Connection error\n")
         result["result"]["is_success"] == False
-        result["result"]["detail"] = "TimeoutError: Connection timed out"  
+        result["result"]["detail"] = "Connection error"  
     else:
         ret = download() 
      
@@ -131,7 +136,7 @@ if __name__ == '__main__':
         with open("result/"+ str(now.strftime("%Y-%m-%d_%H:%M:%S")) + "/" +file_sha256+'.json', 'w') as outfile:
                 json.dump(result, outfile, indent=4)
         print (json.dumps(result, indent=4))
-        os.remove("config.json")
+        #os.remove("config.json")
         collection.update({u'UUID':uid},result)
         change_state()  
         exit()
@@ -155,7 +160,7 @@ if __name__ == '__main__':
 
     os.rename("result/dump/", "result/"+str(now.strftime("%Y-%m-%d_%H:%M:%S")))
     os.remove("result/dump.zip")
-    os.remove("config.json")
+    #os.remove("config.json")
 
     collection.update({u'UUID':uid},result)
     change_state()

@@ -1,6 +1,4 @@
 import os
-import sys
-import time
 
 ignore = ["general_cloaking.yar", "yara_mixed_ext_vars.yar", "generic_anomalies.yar", "thor_inverse_matches.yar", "MALW_Httpsd_ELF.yar", "MALW_AZORULT.yar","MALW_Torte_ELF.yar", "MALW_Mirai_Okiru_ELF.yar", "MALW_Mirai_Satori_ELF.yar", "MALW_TinyShell_Backdoor_gen.yar", "RAT_CrossRAT.yar"]
 
@@ -19,7 +17,6 @@ def find_signatures(root):
 if __name__ == "__main__":
         generated = []
         paths = ["yara/my_rules","yara/signature-base/yara", "yara/rules/malware"]
-        #paths = ["yara/my_rules", "yara/rules/malware"]
         
         for path in paths:
             generated.extend(find_signatures(path))

@@ -6,8 +6,6 @@ from ctypes import *
 import sys, time, json, ctypes.wintypes, os, subprocess
 from pathlib import Path
 
-vm_ipaddr = "192.168.122.2"
-
 def download_file():
      with open("dump.zip", "rb") as handle:
         return xmlrpc.client.Binary(handle.read())
@@ -37,8 +35,8 @@ def dump():
         EnumProcesses(ctypes.byref(ProcessIds), cb, ctypes.byref(BytesReturned))
         src_set = set(ProcessIds)
 
-    subprocess.run(['cmd.exe', "/c", "start", config['target_file']])
-    subprocess.run(['cmd.exe', "/c", "start", 'mouse_emu.exe'])
+    subprocess.call(['cmd.exe', "/c", "start", config['target_file']])
+    subprocess.call(['cmd.exe', "/c", "start", 'mouse_emu.exe'])
 
     print(("wait for unpack %d seconds\n") % config["time"])
         
@@ -78,7 +76,7 @@ def dump():
     subprocess.call(['powershell', "compress-archive", "-Force", "dump", "dump.zip"])
 
 if __name__ == '__main__':
-    server = SimpleXMLRPCServer((vm_ipaddr, 8000), allow_none=True)
+    server = SimpleXMLRPCServer(('0.0.0.0', 8000), allow_none=True)
     print ("Listening on port 8000...")
     server.register_function(download_file, 'download_file')
     server.register_function(upload_file, 'upload_file')
