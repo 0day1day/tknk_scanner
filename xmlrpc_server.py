@@ -23,7 +23,7 @@ def dump():
     with open('config.json', 'r') as outfile:
         config = json.load(outfile)
 
-    subprocess.call(['cmd.exe', "/c", "start", "python", "mouse_emu.pyw"])
+    subprocess.call(['cmd.exe', "/c", "start", "pythonw", "mouse_emu.pyw"])
 
     if config["mode"] == "diff":
         Psapi = ctypes.WinDLL('Psapi.dll')

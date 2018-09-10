@@ -99,7 +99,7 @@ if __name__ == '__main__':
     os.mkdir("result/" + str(now.strftime("%Y-%m-%d_%H:%M:%S")))
 
     upload("config.json")
-    tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/pssuspend.exe", "tools/mouse_emu.exe"]
+    tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/pssuspend.exe", "tools/mouse_emu.pyw"]
 
     for tool_name in tools:
         upload(tool_name)
