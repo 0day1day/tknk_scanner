@@ -15,7 +15,8 @@ The original code of a malware must be scanned using YARA rules after processing
 ## Requirements
 * python 3.5 or later
 * yara-python 3.7.0
-* Web Server (e.g. xxxx)
+* qemu-kvm
+* nginx
 
 ## Installation
 
@@ -53,7 +54,8 @@ cd frontend/
 npm install
 npm run generate
 cd ../
-sudo move -f tknk-scanner.nginx.conf /etc/nginx/sites-available/defalt
+sudo cp -f tknk-scanner.nginx.conf /etc/nginx/sites-available/default
+sudo cp -rf dist/* /usr/share/nginx/html/
 sudo systemctl nginx restart
 ```
 
