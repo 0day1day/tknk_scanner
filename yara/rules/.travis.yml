@@ -5,7 +5,8 @@ before_install:
   - sudo apt-get -qq update
   - sudo apt-get install jq
 # Yara
-  - wget $(curl -s https://api.github.com/repos/VirusTotal/yara/releases/latest | jq -r ".tarball_url") -O yara.tar.gz
+#  - wget $(curl -s https://api.github.com/repos/VirusTotal/yara/releases/latest | jq -r ".tarball_url") -O yara.tar.gz
+  - wget $(curl -s https://api.github.com/repos/VirusTotal/yara/releases/9250110 | jq -r ".tarball_url") -O yara.tar.gz
   - mkdir yara
   - tar -C yara -xzvf yara.tar.gz --strip-components 1
 # Androguard for Yara
@@ -35,5 +36,6 @@ script:
   - echo "test" > testfile
   - echo "{}" > androguard_report.json
   - FALLO=0
-  - for j in $(ls -d */); do for i in $(find $j -type f -name "*.yara" ; find $j -type f -name "*.yar"); do echo $i; yara -x androguard=androguard_report.json $i testfile; if [[ $? -ne 0 ]]; then FALLO=1; fi; done; done
+#  - for j in $(ls -d */); do for i in $(find $j -type f -name "*.yara" ; find $j -type f -name "*.yar"); do echo $i; yara -x androguard=androguard_report.json $i testfile; if [[ $? -ne 0 ]]; then FALLO=1; fi; done; done
+  - for i in $(ls *_index.yar); do echo $i; yara -w -x androguard=androguard_report.json $i testfile; if [[ $? -ne 0 ]]; then FALLO=1; fi; done
   - exit $FALLO
