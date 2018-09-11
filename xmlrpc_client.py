@@ -12,10 +12,7 @@ VM_NAME=tknk_conf['vm_name']
 VM_URL=tknk_conf['vm_url']
 
 def change_state():
-    with open("state.json", 'r') as f:
-        state = json.load(f)
-
-    state['state'] = 0
+    state={"state":0}
 
     with open("state.json", 'w') as f:
         json.dump(state, f)
@@ -54,18 +51,6 @@ def vm_down():
 
 if __name__ == '__main__':
     args = sys.argv
-    c=0
-
-    while(1):
-        vm_state = subprocess.check_output(["virsh", "domstate", VM_NAME])
-        time.sleep(1)
-        c+=1
-        #print (vm_state.decode('utf-8'))
-        if "running" in str(vm_state.decode('utf-8')):
-            break
-        if c == 60:
-            change_state()
-            exit()
 
     #db connect
     client = MongoClient('localhost', 27017)
@@ -98,6 +83,40 @@ if __name__ == '__main__':
 
     os.mkdir("result/" + str(now.strftime("%Y-%m-%d_%H:%M:%S")))
 
+    cmd=[("virsh snapshot-revert " + VM_NAME + " --current")]
+    p = (subprocess.Popen(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True))
+    output = p.stderr.read().decode('utf-8')
+    print(output)
+
+    if "busy" in output:
+        print("failed to initialize KVM: Device or resource busy")
+        is_success == False
+        result["result"]["detail"] = "failed to initialize KVM: Device or resource busy"
+        change_state()  
+        collection.update({u'UUID':uid},result)
+        exit()
+        
+    elif "Domain" in output:
+        print("Domain snapshot not found: the domain does not have a current snapshot")
+        is_success == False
+        result["result"]["detail"] = "Domain snapshot not found: the domain does not have a current snapshot"
+        change_state()  
+        collection.update({u'UUID':uid},result)
+        exit()
+
+    c=0
+
+    while(1):
+        vm_state = subprocess.check_output(["virsh", "domstate", VM_NAME])
+        time.sleep(1)
+        c+=1
+        #print (vm_state.decode('utf-8'))
+        if "running" in str(vm_state.decode('utf-8')):
+            break
+        if c == 60:
+            change_state()
+            exit()
+
     upload("config.json")
     tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/pssuspend.exe", "tools/mouse_emu.pyw"]
 
@@ -107,8 +126,6 @@ if __name__ == '__main__':
     upload("target/" + config['target_file'])
 
     ret = dump()
-    print("ret===============================")
-    pprint(ret)
 
     if ret == False:
         print("Connection error\n")
@@ -124,7 +141,10 @@ if __name__ == '__main__':
 
         else:
             is_success = False
-            result["result"]["detail"] = "dump file does not exist"  
+            if result["mode"] == "procdump":
+                result["result"]["detail"] = "Process does not exist" 
+            else:
+                result["result"]["detail"] = "Dump file does not exist"  
 
     vm_down()
 
