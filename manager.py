@@ -81,8 +81,8 @@ def show_result(uuid=None):
 @app.route('/yara/<rule_name>')
 def get_yara_file(rule_name=None):
  
-    cmd=[("find yara/ -type f | xargs grep -l -x " + "\"rule "+ rule_name +"\"")]
-
+    cmd=[("find yara/ -type f | xargs grep -l -x -E -e " + "\"rule "+ rule_name +" .*{\" -e \"rule "+ rule_name +"{\" -e \"rule " + rule_name + "\"")]
+    print(cmd)
     p = (subprocess.Popen(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, close_fds=True))
     output = p.stdout.read().decode('utf-8')
 
