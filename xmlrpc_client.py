@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
     if "busy" in output:
         print("failed to initialize KVM: Device or resource busy")
-        is_success == False
+        result["result"]["is_success"] = False
         result["result"]["detail"] = "failed to initialize KVM: Device or resource busy"
         change_state()  
         collection.update({u'UUID':uid},result)
@@ -98,7 +98,7 @@ if __name__ == '__main__':
         
     elif "Domain" in output:
         print("Domain snapshot not found: the domain does not have a current snapshot")
-        is_success == False
+        result["result"]["is_success"] = False
         result["result"]["detail"] = "Domain snapshot not found: the domain does not have a current snapshot"
         change_state()  
         collection.update({u'UUID':uid},result)
@@ -129,7 +129,7 @@ if __name__ == '__main__':
 
     if ret == False:
         print("Connection error\n")
-        is_success == False
+        is_success = False
         result["result"]["detail"] = "Connection error"  
     else:
         ret = download() 
