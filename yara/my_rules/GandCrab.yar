@@ -1,9 +1,11 @@
 rule GandCrab
 {
     strings:
-        $string = ".CRAB" wide ascii
-        $b1 = {C7 44 24 40 26 00 76 00 C7 44 24 44 65 00 72 00  C7 44 24 48 73 00 69 00 C7 44 24 4C 6F 00 6E 00}
-
+        $s1 = "&version=" wide ascii
+        $s2 = "/c timeout -c 5 & del \"%s\" /f /q" wide ascii
+        $s3 = "GANDCRAB" wide ascii
+        $t1 = "%s\\GDCB-DECRYPT.txt" wide ascii 
+        $t2 = "%s\\KRAB-DECRYPT.txt" wide ascii
     condition:
-        $string and $b1
+        all of ($s*) and ($t1 or $t2)
 }
