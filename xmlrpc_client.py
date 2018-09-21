@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 import xmlrpc.client
-import os, sys, shutil, json, subprocess, time, yara, glob, hashlib, datetime, requests
+import os, sys, shutil, json, subprocess, time, yara, hashlib, datetime, requests
+from pathlib import Path
 from pymongo import MongoClient
-from pprint import pprint
 
 with open("tknk.conf", 'r') as f:
     tknk_conf = json.load(f)
@@ -81,8 +81,6 @@ if __name__ == '__main__':
 
     result['scans'].append({"sha256":file_sha256, "detect_rule":list(map(str,matches)), "file_name":config['target_file']})
 
-    os.mkdir("result/" + str(now.strftime("%Y-%m-%d_%H:%M:%S")))
-
     cmd=[("virsh snapshot-revert " + VM_NAME + " --current")]
     p = (subprocess.Popen(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True))
     output = p.stderr.read().decode('utf-8')
@@ -135,7 +133,6 @@ if __name__ == '__main__':
         ret = download() 
      
         if ret == True:
-            shutil.move("dump.zip", "result/")
             print("dump finish")
             is_success = True
 
@@ -154,8 +151,8 @@ if __name__ == '__main__':
                 result["result"]["is_success"] = True
                 result["result"]["detail"] = "Detected with yara rule!"  
                 break
-
-        with open("result/"+ str(now.strftime("%Y-%m-%d_%H:%M:%S")) + "/" +file_sha256+'.json', 'w') as outfile:
+        os.mkdir("result/" + str(uid))
+        with open("result/"+ str(uid) + "/" +file_sha256+'.json', 'w') as outfile:
                 json.dump(result, outfile, indent=4)
 
         print (json.dumps(result, indent=4))
@@ -165,15 +162,23 @@ if __name__ == '__main__':
         exit()
 
     elif is_success == True:
+        p = Path("result/dump.zip")
+        if p.exists():
+            p.unlink()
+            print("remove")
+        shutil.move("dump.zip", "result/")
         subprocess.run(['unzip', "dump.zip"], cwd="result")   
 
-    files = glob.glob("result/dump/**", recursive=True)
+        p = Path("result/dump/")
 
-    for f in files:
-        if "exe" in f.rsplit(".", 1) or "dll" in f.rsplit(".", 1) or "dmp" in f.rsplit(".", 1):
-	        sha256_hash = str(hashlib.sha256(open(f,'rb').read()).hexdigest())
-	        matches = rules.match(f)
-	        result['scans'].append({"sha256":sha256_hash, "detect_rule":list(map(str,matches)), "file_name":f.rsplit("/", 1)[1]})
+        for f in p.glob("**/*"):
+            print(f.suffix)
+            print(f.resolve())
+            print(f.name)
+            if (".exe" == f.suffix) or (".dll" == f.suffix) or (".dmp" == f.suffix):
+	            sha256_hash = str(hashlib.sha256(open(str(f.resolve()),'rb').read()).hexdigest())
+	            matches = rules.match(str(f.resolve()))
+	            result['scans'].append({"sha256":sha256_hash, "detect_rule":list(map(str,matches)), "file_name":f.name})
 
     for scan in result["scans"]:
         if scan["detect_rule"] != []:
@@ -186,7 +191,7 @@ if __name__ == '__main__':
     with open("result/dump/"+file_sha256+'.json', 'w') as outfile:
         json.dump(result, outfile, indent=4)
 
-    os.rename("result/dump/", "result/"+str(now.strftime("%Y-%m-%d_%H:%M:%S")))
+    os.rename("result/dump/", "result/"+str(uid))
     os.remove("result/dump.zip")
     os.remove("config.json")
 
