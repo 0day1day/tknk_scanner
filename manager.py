@@ -80,6 +80,10 @@ def show_result(uuid=None):
         
 @app.route('/yara/<rule_name>')
 def get_yara_file(rule_name=None):
+
+    rule_name = rule_name.replace("_", "")
+    if rule_name.isalnum() == False:
+        return make_response(jsonify(status_code=2, message="Invalid rule_name"), 400)
  
     cmd=[("find yara/ -type f | xargs grep -l -x -E -e " + "\"rule "+ rule_name +" .*{\" -e \"rule "+ rule_name +"{\" -e \"rule " + rule_name + "\"")]
     print(cmd)
