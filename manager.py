@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import json, subprocess, requests, time, shutil, magic, os, uuid
+import json, subprocess, requests, time, shutil, magic, os, uuid, math
 from pathlib import Path
 from pymongo import MongoClient
 from flask import Flask, jsonify, request, url_for, abort, Response, make_response
@@ -98,11 +98,12 @@ def get_yara_file(rule_name=None):
 def page(page_num=None):
     page=[]
     page_num = int(page_num)
+    page_size= math.floor(len(list(collection.find()))/50)+1
     page_item = collection.find().sort('timestamp',-1).limit(50).skip((page_num-1)*50)
     for p in page_item:
         p.pop('_id')
         page.append(p)
-    return jsonify(status_code=0, page=page)
+    return jsonify(status_code=0, page=page, page_size=page_size)
 
 @app.errorhandler(404)
 def not_found(error):
