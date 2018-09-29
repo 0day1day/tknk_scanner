@@ -81,12 +81,11 @@ def show_result(uuid=None):
 @app.route('/yara/<rule_name>')
 def get_yara_file(rule_name=None):
 
-    rule_name = rule_name.replace("_", "")
-    if rule_name.isalnum() == False:
+    rule_name_check = rule_name.replace("_", "")
+    if rule_name_check.isalnum() == False:
         return make_response(jsonify(status_code=2, message="Invalid rule_name"), 400)
  
     cmd=[("find yara/ -type f | xargs grep -l -x -E -e " + "\"rule "+ rule_name +" .*{\" -e \"rule "+ rule_name +"{\" -e \"rule " + rule_name + "\"")]
-    print(cmd)
     p = (subprocess.Popen(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, close_fds=True))
     output = p.stdout.read().decode('utf-8')
 
@@ -94,6 +93,16 @@ def get_yara_file(rule_name=None):
         yara_file=f.read()
 
     return jsonify(status_code=0, result=yara_file)
+
+@app.route('/page/<page_num>')
+def page(page_num=None):
+    page=[]
+    page_num = int(page_num)
+    page_item = collection.find().sort('timestamp',-1).limit(50).skip((page_num-1)*50)
+    for p in page_item:
+        p.pop('_id')
+        page.append(p)
+    return jsonify(status_code=0, page=page)
 
 @app.errorhandler(404)
 def not_found(error):
