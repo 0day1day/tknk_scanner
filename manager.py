@@ -53,7 +53,6 @@ def file_upload():
     f.save(os.path.join(UPLOAD_FOLDER, filename))
 
     file_type = magic.from_file("target/"+filename)
-    print(file_type)
 
     if ("DLL" in file_type) or (("PE32" or"PE32+") not in file_type):
             print("Invalid File Format!! Only PE Format File(none dll).")

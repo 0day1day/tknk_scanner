@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import xmlrpc.client
-import os, sys, shutil, json, subprocess, time, yara, hashlib, datetime, requests
+import os, sys, shutil, json, subprocess, time, yara, hashlib, datetime, requests, magic
 from pathlib import Path
 from pymongo import MongoClient
 
@@ -71,7 +71,8 @@ if __name__ == '__main__':
               "mode":config['mode'],
               "timestamp":str(now.isoformat()),
               "scans":[],
-              "UUID":uid
+              "UUID":uid,
+              "magic":magic.from_file(config['path'])
              }
 
     file_sha256 = str(hashlib.sha256(open(config['path'],'rb').read()).hexdigest())
