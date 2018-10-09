@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import json, subprocess, requests, time, shutil, magic, os, uuid, math
+import json, subprocess, requests, time, shutil, magic, os, uuid, math, redis
 from pathlib import Path
 from pymongo import MongoClient
 from flask import Flask, jsonify, request, url_for, abort, Response, make_response
@@ -18,7 +18,7 @@ def start_analyze():
     if 'application/json' not in request.headers['Content-Type']:
         print(request.headers['Content-Type'])
         return jsonify(status_code=2, message="Content-Type Error.")
-
+    """
     with open("state.json", 'r') as f:
         state = json.load(f)
 
@@ -28,6 +28,7 @@ def start_analyze():
         state['state'] = 1
         with open("state.json", 'w') as f:
             json.dump(state, f)
+    """
 
     json_data = request.json
 
@@ -40,6 +41,7 @@ def start_analyze():
     print(json.dumps(json_data, indent=4))
     with open('config.json', 'w') as outfile:
         json.dump(json_data, outfile)
+    r.set(uid, str(json_data))
 
     cmd = [("./xmlrpc_client.py "+ uid)]
     subprocess.Popen(cmd, shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
@@ -113,10 +115,13 @@ if __name__ == '__main__':
     db = client.scan_database
     collection = db.scan_collection
 
-    state={"state":0}
+    pool =  redis.ConnectionPool(host='localhost', port=6379, db=0)
+    r = redis.StrictRedis(connection_pool=pool)
+
+    """state={"state":0}
     with open("state.json", 'w') as f:
         json.dump(state, f)
-
+    """
     app.run(host='0.0.0.0', port=8000)
     
 

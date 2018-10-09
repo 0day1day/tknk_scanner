@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import xmlrpc.client
-import os, sys, shutil, json, subprocess, time, yara, hashlib, datetime, requests, magic
+import os, sys, shutil, json, subprocess, time, yara, hashlib, datetime, requests, magic, redis
 from pathlib import Path
 from pymongo import MongoClient
 
@@ -51,23 +51,28 @@ def vm_down():
 
 if __name__ == '__main__':
     args = sys.argv
+    uid=args[1]
 
     #db connect
     client = MongoClient('localhost', 27017)
     db = client.scan_database
-
     collection = db.scan_collection
 
+    #redis connect
+    pool =  redis.ConnectionPool(host='localhost', port=6379, db=0)
+    r = redis.StrictRedis(connection_pool=pool)
+
     #read config
-    with open('config.json', 'r') as f:
-        config = json.load(f)
-
-    uid=args[1]
-
+    config = r.get(uid).decode('utf-8').replace("\'", "\"")
+    #print(config)
+    config = json.loads(config)
+    #with open('config.json', 'r') as f:
+    #    config = json.load(f)
+    
     #make report format
     now = datetime.datetime.today()
     result = {"result":{"detail":"", "is_success":False},
-              "run_time":config['time'], 
+              "run_time":str(config['time']), 
               "mode":config['mode'],
               "timestamp":str(now.isoformat()),
               "scans":[],
