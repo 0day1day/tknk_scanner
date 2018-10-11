@@ -49,9 +49,7 @@ def dump():
 def vm_down():
     print(subprocess.call(['virsh', "destroy", VM_NAME]))
 
-if __name__ == '__main__':
-    args = sys.argv
-    uid=args[1]
+def analyze(uid):
 
     #db connect
     client = MongoClient('localhost', 27017)
@@ -62,12 +60,11 @@ if __name__ == '__main__':
     pool =  redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.StrictRedis(connection_pool=pool)
 
-    #read config
+    #config read & write
     config = r.get(uid).decode('utf-8').replace("\'", "\"")
-    #print(config)
     config = json.loads(config)
-    #with open('config.json', 'r') as f:
-    #    config = json.load(f)
+    with open('config.json', 'w') as outfile:
+      json.dump(config, outfile)
     
     #make report format
     now = datetime.datetime.today()
@@ -202,5 +199,5 @@ if __name__ == '__main__':
     os.remove("config.json")
 
     collection.update({u'UUID':uid},result)
-    change_state()
+    #change_state()
 

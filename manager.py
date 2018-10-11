@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-
+from rq import Queue
 import json, subprocess, requests, time, shutil, magic, os, uuid, math, redis
 from pathlib import Path
 from pymongo import MongoClient
 from flask import Flask, jsonify, request, url_for, abort, Response, make_response
+from redis import Redis
+from xmlrpc_client import analyze
 
 with open("tknk.conf", 'r') as f:
     tknk_conf = json.load(f)
@@ -39,12 +41,11 @@ def start_analyze():
 
     json_data['target_file']=json_data['path'].split("/")[1]
     print(json.dumps(json_data, indent=4))
-    with open('config.json', 'w') as outfile:
-        json.dump(json_data, outfile)
-    r.set(uid, str(json_data))
+    r.set(uid, json_data)
 
-    cmd = [("./xmlrpc_client.py "+ uid)]
-    subprocess.Popen(cmd, shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
+    job = q.enqueue(analyze, uid)
+    #cmd = [("./xmlrpc_client.py "+ uid)]
+    #subprocess.Popen(cmd, shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
 
     return jsonify(status_code=0, UUID=uid, message="Submission Success!")
 
@@ -117,6 +118,10 @@ if __name__ == '__main__':
 
     pool =  redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.StrictRedis(connection_pool=pool)
+
+    # Tell RQ what Redis connection to use
+    redis_conn = Redis(host='localhost', port=6379)
+    q = Queue(connection=redis_conn)  # no args implies the default queue
 
     """state={"state":0}
     with open("state.json", 'w') as f:
