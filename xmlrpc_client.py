@@ -11,12 +11,6 @@ with open("tknk.conf", 'r') as f:
 VM_NAME=tknk_conf['vm_name']
 VM_URL=tknk_conf['vm_url']
 
-def change_state():
-    state={"state":0}
-
-    with open("state.json", 'w') as f:
-        json.dump(state, f)
-
 def download():
     proxy = xmlrpc.client.ServerProxy(VM_URL)
     with open("dump.zip", "wb") as handle:
@@ -199,5 +193,4 @@ def analyze(uid):
     os.remove("config.json")
 
     collection.update({u'UUID':uid},result)
-    #change_state()
 

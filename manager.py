@@ -20,17 +20,6 @@ def start_analyze():
     if 'application/json' not in request.headers['Content-Type']:
         print(request.headers['Content-Type'])
         return jsonify(status_code=2, message="Content-Type Error.")
-    """
-    with open("state.json", 'r') as f:
-        state = json.load(f)
-
-    if state['state'] == 1:
-        return make_response(jsonify(status_code=1, message="It is processing now. Wait for analysis."), 406)
-    elif state['state'] == 0:
-        state['state'] = 1
-        with open("state.json", 'w') as f:
-            json.dump(state, f)
-    """
 
     json_data = request.json
 
@@ -123,10 +112,6 @@ if __name__ == '__main__':
     redis_conn = Redis(host='localhost', port=6379)
     q = Queue(connection=redis_conn)  # no args implies the default queue
 
-    """state={"state":0}
-    with open("state.json", 'w') as f:
-        json.dump(state, f)
-    """
     app.run(host='0.0.0.0', port=8000)
     
 
