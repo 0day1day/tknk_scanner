@@ -21,7 +21,6 @@ def download():
         except xmlrpc.client.Fault:
             print(sys.exc_info())
             return sys.exc_info()
-
             
 def upload(filename):
     proxy = xmlrpc.client.ServerProxy(VM_URL)
@@ -89,7 +88,7 @@ def analyze(uid):
         result["result"]["detail"] = "failed to initialize KVM: Device or resource busy"
         change_state()  
         collection.update({u'UUID':uid},result)
-        sys.exit()
+        os._exit()
         
     elif "Domain" in output:
         print("Domain snapshot not found: the domain does not have a current snapshot")
@@ -97,7 +96,7 @@ def analyze(uid):
         result["result"]["detail"] = "Domain snapshot not found: the domain does not have a current snapshot"
         change_state()  
         collection.update({u'UUID':uid},result)
-        sys.exit()
+        os._exit()
 
     c=0
 
@@ -110,7 +109,7 @@ def analyze(uid):
             break
         if c == 60:
             change_state()
-            sys.exit()
+            os._exit()
 
     upload("config.json")
     tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/pssuspend.exe", "tools/mouse_emu.pyw"]
@@ -156,7 +155,7 @@ def analyze(uid):
         os.remove("config.json")
         collection.update({u'UUID':uid},result)
         change_state()  
-        sys.exit()
+        os._exit()
 
     elif is_success == True:
         p = Path("result/dump.zip")
