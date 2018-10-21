@@ -54,8 +54,7 @@ def analyze(uid):
     r = redis.StrictRedis(connection_pool=pool)
 
     #config read & write
-    config = r.get(uid).decode('utf-8').replace("\'", "\"")
-    config = json.loads(config)
+    config = eval(r.get(uid).decode('utf-8'))
     with open('config.json', 'w') as outfile:
       json.dump(config, outfile)
     
@@ -86,17 +85,15 @@ def analyze(uid):
         print("failed to initialize KVM: Device or resource busy")
         result["result"]["is_success"] = False
         result["result"]["detail"] = "failed to initialize KVM: Device or resource busy"
-        change_state()  
         collection.update({u'UUID':uid},result)
-        os._exit()
+        os._exit(0)
         
     elif "Domain" in output:
         print("Domain snapshot not found: the domain does not have a current snapshot")
         result["result"]["is_success"] = False
         result["result"]["detail"] = "Domain snapshot not found: the domain does not have a current snapshot"
-        change_state()  
         collection.update({u'UUID':uid},result)
-        os._exit()
+        os._exit(0)
 
     c=0
 
@@ -109,7 +106,7 @@ def analyze(uid):
             break
         if c == 60:
             change_state()
-            os._exit()
+            os._exit(0)
 
     upload("config.json")
     tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/pssuspend.exe", "tools/mouse_emu.pyw"]
@@ -154,8 +151,7 @@ def analyze(uid):
         print (json.dumps(result, indent=4))
         os.remove("config.json")
         collection.update({u'UUID':uid},result)
-        change_state()  
-        os._exit()
+        os._exit(0)
 
     elif is_success == True:
         p = Path("result/dump.zip")
