@@ -31,10 +31,10 @@ def upload(filename):
     print("upload..." + filename)
     proxy.upload_file(binary_data, filename)
 
-def dump():
+def dump(config):
     proxy = xmlrpc.client.ServerProxy(VM_URL)
     try:
-        proxy.dump()
+        proxy.dump(config)
         return True
     except:
         return False
@@ -55,8 +55,6 @@ def analyze(uid):
 
     #config read & write
     config = eval(r.get(uid).decode('utf-8'))
-    with open('config.json', 'w') as outfile:
-      json.dump(config, outfile)
     
     #make report format
     now = datetime.datetime.today()
@@ -108,7 +106,6 @@ def analyze(uid):
             change_state()
             os._exit(0)
 
-    upload("config.json")
     tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/pssuspend.exe", "tools/mouse_emu.pyw"]
 
     for tool_name in tools:
@@ -116,7 +113,7 @@ def analyze(uid):
 
     upload("target/" + config['target_file'])
 
-    ret = dump()
+    ret = dump(config)
 
     if ret == False:
         print("Connection error\n")
@@ -149,7 +146,6 @@ def analyze(uid):
                 json.dump(result, outfile, indent=4)
 
         print (json.dumps(result, indent=4))
-        os.remove("config.json")
         collection.update({u'UUID':uid},result)
         os._exit(0)
 
@@ -185,7 +181,6 @@ def analyze(uid):
 
     os.rename("result/dump/", "result/"+str(uid))
     os.remove("result/dump.zip")
-    os.remove("config.json")
 
     collection.update({u'UUID':uid},result)
 

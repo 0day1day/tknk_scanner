@@ -32,7 +32,7 @@ def start_analyze():
     print(json.dumps(json_data, indent=4))
     r.set(uid, json_data)
 
-    job = q.enqueue(analyze, uid)
+    job = q.enqueue(analyze, uid, job_id=uid)
     #cmd = [("./xmlrpc_client.py "+ uid)]
     #subprocess.Popen(cmd, shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
 
@@ -95,6 +95,14 @@ def page(page_num=None):
         p.pop('_id')
         page.append(p)
     return jsonify(status_code=0, page=page, page_size=page_size)
+
+@app.route('/jobs')
+def job_ids():
+    redis_conn = Redis()
+    q = Queue(connection=redis_conn)# Getting the number of jobs in the queue
+    print(len(q))# Retrieving jobs
+    queued_job_ids = q.job_ids # Gets a list of job IDs from the queue
+    return jsonify(status_code=0, job_ids=queued_job_ids)
 
 @app.errorhandler(404)
 def not_found(error):
