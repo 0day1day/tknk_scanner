@@ -17,11 +17,8 @@ def upload_file(arg, filename):
         handle.write(arg.data)
         return True
 
-def dump():
+def dump(config):
     os.mkdir("dump")
-
-    with open('config.json', 'r') as outfile:
-        config = json.load(outfile)
 
     subprocess.call(['cmd.exe', "/c", "start", "pythonw", "mouse_emu.pyw"])
 
