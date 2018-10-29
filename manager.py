@@ -32,9 +32,7 @@ def start_analyze():
     print(json.dumps(json_data, indent=4))
     r.set(uid, json_data)
 
-    job = q.enqueue(analyze, uid, job_id=uid)
-    #cmd = [("./xmlrpc_client.py "+ uid)]
-    #subprocess.Popen(cmd, shell=True, stdin=None, stdout=None, stderr=None, close_fds=True)
+    job = q.enqueue(analyze, uid, job_id=uid, timeout=json_data['time']+300)
 
     return jsonify(status_code=0, UUID=uid, message="Submission Success!")
 

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import xmlrpc.client
-import os, sys, shutil, json, subprocess, time, yara, hashlib, datetime, requests, magic, redis
+import os, sys, shutil, json, subprocess, time, yara, hashlib, datetime, requests, magic, redis, socket
 from pathlib import Path
 from pymongo import MongoClient
+from read_avclass_report import run_avclass
 
 with open("tknk.conf", 'r') as f:
     tknk_conf = json.load(f)
@@ -64,11 +65,18 @@ def analyze(uid):
               "timestamp":str(now.isoformat()),
               "scans":[],
               "UUID":uid,
-              "magic":magic.from_file(config['path'])
+              "magic":magic.from_file(config['path']),
+              "virus_total":0
              }
 
     file_sha256 = str(hashlib.sha256(open(config['path'],'rb').read()).hexdigest())
 
+    #avclass
+    if tknk_conf['virus_total'] == 1:
+        result['virus_total'] = 1
+        result['avclass'] = run_avclass(tknk_conf['vt_key'], file_sha256)   
+
+    #read yara rules
     rules = yara.compile('index.yar')
     matches = rules.match(config['path'])
 
