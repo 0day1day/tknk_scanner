@@ -35,8 +35,6 @@ $ sudo python3 setup.py install
     * vm_url
 5. Download Tools and copy to `tools/`
     * [hollows_hunter](https://github.com/hasherezade/hollows_hunter)
-    * [PsSuspend](https://docs.microsoft.com/en-us/sysinternals/downloads/pssuspend)
-    * [ProcDump](https://docs.microsoft.com/en-us/sysinternals/downloads/procdump)
 6. Set yara rules  
   Save yara rules in "rules" folder. You need to add the rule to index.yar.
 
@@ -81,5 +79,4 @@ tknk_scanner is open-sourced software licensed under the MIT License
 
 ## Thanks
 @hasherezade - [hollows_hunter](https://github.com/hasherezade/hollows_hunter)  
-Sysinternals - https://docs.microsoft.com/en-us/sysinternals/  
 yara-python -  https://github.com/VirusTotal/yara-python  
