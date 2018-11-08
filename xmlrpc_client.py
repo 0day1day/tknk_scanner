@@ -74,7 +74,14 @@ def analyze(uid):
     #avclass
     if tknk_conf['virus_total'] == 1:
         result['virus_total'] = 1
-        result['avclass'] = run_avclass(tknk_conf['vt_key'], file_sha256)   
+        result['avclass'] = run_avclass(tknk_conf['vt_key'], file_sha256)
+
+    #Detect it easy
+    cmd=["die/diec.sh", config['path']]
+    p = subprocess.run(cmd, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+    result['die'] = p.stdout.decode("utf8").split("\n")
+    if result['die'] != []:
+        result['die'].pop()
 
     #read yara rules
     rules = yara.compile('index.yar')
@@ -111,7 +118,6 @@ def analyze(uid):
         if "running" in str(vm_state.decode('utf-8')):
             break
         if c == 60:
-            change_state()
             os._exit(0)
 
     tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/pssuspend.exe", "tools/mouse_emu.pyw"]
