@@ -133,6 +133,7 @@ def analyze(uid):
         print("Connection error\n")
         is_success = False
         result["result"]["detail"] = "Connection error"  
+        exit()
     else:
         ret = download() 
      

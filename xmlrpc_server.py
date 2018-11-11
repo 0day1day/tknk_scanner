@@ -138,7 +138,7 @@ def dump(config):
 
     if config["mode"] == "procdump":
         subprocess.call(["pssuspend.exe", config["target_file"], "/AcceptEula"])
-        subprocess.call(["procdump.exe", "-ma", PID, "/AcceptEula"],cwd="dump")
+        subprocess.call(["procdump.exe", "-ma", str(PID), "/AcceptEula"],cwd="dump")
 
     elif config["mode"] == "hollows_hunter":
         subprocess.call(["pssuspend.exe", config["target_file"], "/AcceptEula"])
