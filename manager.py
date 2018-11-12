@@ -32,7 +32,7 @@ def start_analyze():
     print(json.dumps(json_data, indent=4))
     r.set(uid, json_data)
 
-    job = q.enqueue(analyze, uid, job_id=uid, timeout=json_data['time']+300)
+    job = q.enqueue(analyze, uid, job_id=uid, timeout=json_data['time']+600)
 
     return jsonify(status_code=0, UUID=uid, message="Submission Success!")
 

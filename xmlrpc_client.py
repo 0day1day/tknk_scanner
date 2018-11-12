@@ -120,7 +120,7 @@ def analyze(uid):
         if c == 60:
             os._exit(0)
 
-    tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/pssuspend.exe", "tools/mouse_emu.pyw"]
+    tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/mouse_emu.pyw"]
 
     for tool_name in tools:
         upload(tool_name)

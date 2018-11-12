@@ -70,7 +70,39 @@ class PROCESS_INFORMATION(Structure):
         ("dwThreadId",  DWORD),
         ]
 
+class THREADENTRY32(Structure):
+    _fields_ = [
+        ('dwSize',             DWORD),
+        ('cntUsage',           DWORD),
+        ('th32ThreadID',       DWORD),
+        ('th32OwnerProcessID', DWORD),
+        ('tpBasePri',          LONG),
+        ('tpDeltaPri',         LONG),
+        ('dwFlags',            DWORD),
+]
+
+THREAD_SUSPEND_RESUME = 0x0002
+
 ################################################
+
+def SuspendProcess(pid):
+    hSnapshot = kernel32.CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0)
+
+    te = THREADENTRY32()
+    te.dwSize = sizeof(THREADENTRY32)
+    ret = kernel32.Thread32First(hSnapshot,  byref(te))
+    if ret == 0 :
+        print ("[*] SuspendProcess Fail")
+        kernel32.CloseHandle(hSnapshot)
+
+    while ret :
+        if te.th32OwnerProcessID == pid : 
+            print ("[*] th32ThreadID=%d"% te.th32ThreadID )
+            print ("[*] th32OwnerProcessID=%d"% te.th32OwnerProcessID)
+            print("[*] --------------------------------")
+            hThread = kernel32.OpenThread(THREAD_SUSPEND_RESUME, False, te.th32ThreadID)
+            r = kernel32.SuspendThread(hThread)
+        ret = kernel32.Thread32Next( hSnapshot, byref(te) )
 
 def download_file():
      with open("dump.zip", "rb") as handle:
@@ -126,22 +158,24 @@ def dump(config):
         print ("[*] The Process ID is: %d" % process_information.dwProcessId)
         PID = process_information.dwProcessId
 
+        if config["mode"] == "procdump":
+            subprocess.call(["procdump.exe", "-t", "-ma", str(PID), "/AcceptEula"],cwd="dump")
+
     else:    
         print ("[*] Error with error code %d." % kernel32.GetLastError())
         exit()
 
-    print(("wait for unpack %d seconds\n") % config["time"])
+    print(("[*] wait for unpack %d seconds\n") % config["time"])
         
     time.sleep(config["time"])
 
-    print("dumping\n")
+    print("[*] dumping\n")
 
     if config["mode"] == "procdump":
-        subprocess.call(["pssuspend.exe", config["target_file"], "/AcceptEula"])
-        subprocess.call(["procdump.exe", "-ma", str(PID), "/AcceptEula"],cwd="dump")
+        kernel32.TerminateProcess(PID)
 
     elif config["mode"] == "hollows_hunter":
-        subprocess.call(["pssuspend.exe", config["target_file"], "/AcceptEula"])
+        SuspendProcess(PID)
         subprocess.call(["hollows_hunter.exe"],cwd="dump")
 
     elif config["mode"] == "diff":
@@ -153,19 +187,14 @@ def dump(config):
         new_ProcessIds = []
 
         for pid in diff_ProcessIds:
-            try:
-                proc_state = subprocess.check_output(["pssuspend.exe", str(pid), "/AcceptEula"])
-                if "suspended." in str(proc_state):
-                    new_ProcessIds.append(pid)
-            except subprocess.CalledProcessError:
-                pass
+            SuspendProcess(pid)
         for pid in new_ProcessIds:
             subprocess.call(["procdump.exe", "-ma", str(pid), "/AcceptEula"],cwd="dump")
-
+   
     elif config["mode"] == "scylla":
         print("##TODO")
 
-    print("make zip\n")
+    print("[*] make zip\n")
     subprocess.call(['powershell', "compress-archive", "-Force", "dump", "dump.zip"])
 
 ################################################
