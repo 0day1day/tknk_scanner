@@ -107,15 +107,16 @@ def scylla_dump(pid, copy_file, entrypoint):
     print("[*] me32.modBaseAddr: " + hex(me32.modBaseAddr))
 
     scylla = windll.scylla
-    #print(scylla)
+    print("windll.scylla")
+    print(scylla)
     ScyllaDumpProcessW = scylla.ScyllaDumpProcessW
-    ScyllaIatSearch = scylla.ScyllaIatSearch
-    #print(ScyllaDumpProcessW)
+    #ScyllaIatSearch = scylla.ScyllaIatSearch
+    print("ScyllaDumpProcessW")
+    print(ScyllaDumpProcessW)
 
     print("[*] AddressOfEntryPoint: " +  hex(entrypoint))
     out_file = str(pid)+"_dump.exe"
     imagebase=me32.modBaseAddr
-    os.chdir("dump")
 
     # BOOL __stdcall ScyllaDumpProcessW(DWORD_PTR pid, const WCHAR * fileToDump, DWORD_PTR imagebase, DWORD_PTR entrypoint, const WCHAR * fileResult);
     ret = ScyllaDumpProcessW(
@@ -127,12 +128,16 @@ def scylla_dump(pid, copy_file, entrypoint):
     )
 
     print(ret)
-    os.chdir("..")
 
     if(ret != 1):
         print("Process does not exist.")
+        return
 
-    kernel32.TerminateProcess(process_information.hProcess)
+    kernel32.TerminateProcess(pid)
+    
+    shutil.move(out_file, "dump/")
+   
+    return
 
 
 def SuspendProcess(pid):
@@ -153,6 +158,8 @@ def SuspendProcess(pid):
             hThread = kernel32.OpenThread(THREAD_SUSPEND_RESUME, False, te.th32ThreadID)
             r = kernel32.SuspendThread(hThread)
         ret = kernel32.Thread32Next( hSnapshot, byref(te) )
+    
+    return
 
 def download_file():
      with open("dump.zip", "rb") as handle:
