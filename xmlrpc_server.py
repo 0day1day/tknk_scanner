@@ -3,7 +3,8 @@
 from xmlrpc.server import SimpleXMLRPCServer
 import xmlrpc.client
 from ctypes import *
-import sys, time, json, ctypes.wintypes, os, subprocess
+from ctypes.wintypes import *
+import sys, time, json, ctypes.wintypes, os, subprocess, shutil
 from pathlib import Path
 
 #Microsoft types to ctypes for clarity
@@ -21,7 +22,6 @@ DWORD64   = c_uint64
 PWCHAR    = c_wchar_p
 DWORD_PTR = c_uint64
 BOOL      = c_bool
-DWORD_PTR_P= POINTER(c_uint64)
 
 # Constants
 DEBUG_PROCESS         = 0x00000001
@@ -83,7 +83,57 @@ class THREADENTRY32(Structure):
 
 THREAD_SUSPEND_RESUME = 0x0002
 
+class MODULEENTRY32(Structure):
+    _fields_ = [( 'dwSize' , DWORD ) , 
+                ( 'th32ModuleID' , DWORD ),
+                ( 'th32ProcessID' , DWORD ),
+                ( 'GlblcntUsage' , DWORD ),
+                ( 'ProccntUsage' , DWORD ) ,
+                ( 'modBaseAddr' , DWORD_PTR ) ,
+                ( 'modBaseSize' , DWORD ) , 
+                ( 'hModule' , HMODULE ) ,
+                ( 'szModule' , c_char * 256 ),
+                ( 'szExePath' , c_char * 260 ) ]
+
 ################################################
+
+def scylla_dump(pid, copy_file, entrypoint):
+    hSnapshot = kernel32.CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, pid)
+
+    me32 = MODULEENTRY32()
+    me32.dwSize = sizeof(MODULEENTRY32)
+
+    kernel32.Module32First(hSnapshot, byref(me32))
+    print("[*] me32.modBaseAddr: " + hex(me32.modBaseAddr))
+
+    scylla = windll.scylla
+    #print(scylla)
+    ScyllaDumpProcessW = scylla.ScyllaDumpProcessW
+    ScyllaIatSearch = scylla.ScyllaIatSearch
+    #print(ScyllaDumpProcessW)
+
+    print("[*] AddressOfEntryPoint: " +  hex(entrypoint))
+    out_file = str(pid)+"_dump.exe"
+    imagebase=me32.modBaseAddr
+    os.chdir("dump")
+
+    # BOOL __stdcall ScyllaDumpProcessW(DWORD_PTR pid, const WCHAR * fileToDump, DWORD_PTR imagebase, DWORD_PTR entrypoint, const WCHAR * fileResult);
+    ret = ScyllaDumpProcessW(
+        DWORD_PTR(pid),
+        PWCHAR(copy_file),
+        DWORD_PTR(imagebase),
+        DWORD_PTR(entrypoint),
+        PWCHAR(out_file)
+    )
+
+    print(ret)
+    os.chdir("..")
+
+    if(ret != 1):
+        print("Process does not exist.")
+
+    kernel32.TerminateProcess(process_information.hProcess)
+
 
 def SuspendProcess(pid):
     hSnapshot = kernel32.CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0)
@@ -117,6 +167,7 @@ def upload_file(arg, filename):
 
 def dump(config):
     os.mkdir("dump")
+    print(config)
 
     subprocess.call(['cmd.exe', "/c", "start", "pythonw", "mouse_emu.pyw"])
 
@@ -132,9 +183,11 @@ def dump(config):
         EnumProcesses(ctypes.byref(ProcessIds), cb, ctypes.byref(BytesReturned))
         src_set = set(ProcessIds)
 
-    #subprocess.call(['cmd.exe', "/c", "start", config['target_file']])
-
-    path_to_exe=config['target_file']
+    elif config["mode"] == "scylla":
+        print(config)
+        copy_file = config['target_file'].rsplit(".")[0]+"_copy.exe"
+        print(copy_file)
+        shutil.copyfile(config['target_file'], copy_file)
 
     creation_flags = CREATE_NEW_CONSOLE 
     startupinfo         = STARTUPINFO()
@@ -143,7 +196,7 @@ def dump(config):
     startupinfo.wShowWindow = 0x0
     startupinfo.cb = sizeof(startupinfo)
     
-    if kernel32.CreateProcessW(path_to_exe,
+    if kernel32.CreateProcessW(config['target_file'],
                                    None,
                                    None,
                                    None,
@@ -163,7 +216,7 @@ def dump(config):
 
     else:    
         print ("[*] Error with error code %d." % kernel32.GetLastError())
-        exit()
+        return
 
     print(("[*] wait for unpack %d seconds\n") % config["time"])
         
@@ -193,6 +246,7 @@ def dump(config):
    
     elif config["mode"] == "scylla":
         print("##TODO")
+        scylla_dump(PID, copy_file, config['entrypoint'])
 
     print("[*] make zip\n")
     subprocess.call(['powershell', "compress-archive", "-Force", "dump", "dump.zip"])

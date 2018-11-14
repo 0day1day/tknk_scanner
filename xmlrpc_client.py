@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import xmlrpc.client
-import os, sys, shutil, json, subprocess, time, yara, hashlib, datetime, requests, magic, redis, socket
+import os, sys, shutil, json, subprocess, time, yara, hashlib, datetime, requests, magic, redis, socket, pefile
 from pathlib import Path
 from pymongo import MongoClient
 from read_avclass_report import run_avclass
@@ -56,6 +56,8 @@ def analyze(uid):
 
     #config read & write
     config = eval(r.get(uid).decode('utf-8'))
+    pe =  pefile.PE(config['path'])
+    config['entrypoint'] = pe.OPTIONAL_HEADER.AddressOfEntryPoint
     
     #make report format
     now = datetime.datetime.today()
@@ -119,8 +121,14 @@ def analyze(uid):
             break
         if c == 60:
             os._exit(0)
-
-    tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/procdump.exe", "tools/mouse_emu.pyw"]
+    if config['mode'] == "hollows_hunter":
+        tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/mouse_emu.pyw"]
+    elif config['mode'] == "procdump":
+        tools = ["tools/procdump.exe", "tools/mouse_emu.pyw"]
+    elif config['mode'] == "scylla":
+        tools = ["tools/Scylla.dll", "tools/mouse_emu.pyw"]
+    elif config['mode'] == "diff":
+        tools = ["tools/procdump.exe", "tools/mouse_emu.pyw"]
 
     for tool_name in tools:
         upload(tool_name)
