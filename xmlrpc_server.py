@@ -107,12 +107,7 @@ def scylla_dump(pid, copy_file, entrypoint):
     print("[*] me32.modBaseAddr: " + hex(me32.modBaseAddr))
 
     scylla = windll.scylla
-    print("windll.scylla")
-    print(scylla)
     ScyllaDumpProcessW = scylla.ScyllaDumpProcessW
-    #ScyllaIatSearch = scylla.ScyllaIatSearch
-    print("ScyllaDumpProcessW")
-    print(ScyllaDumpProcessW)
 
     print("[*] AddressOfEntryPoint: " +  hex(entrypoint))
     out_file = str(pid)+"_dump.exe"
