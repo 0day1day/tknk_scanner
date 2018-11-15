@@ -252,7 +252,7 @@ def dump(config):
             subprocess.call(["procdump.exe", "-ma", str(pid), "/AcceptEula"],cwd="dump")
    
     elif config["mode"] == "scylla":
-        print("##TODO")
+        SuspendProcess(PID)
         scylla_dump(PID, copy_file, config['entrypoint'])
 
     print("[*] make zip\n")
