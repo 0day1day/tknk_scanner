@@ -70,8 +70,11 @@ def analyze(uid):
               "magic":magic.from_file(config['path']),
               "virus_total":0
              }
-
-    file_sha256 = str(hashlib.sha256(open(config['path'],'rb').read()).hexdigest())
+ 
+    f = open(config['path'],'rb').read()
+    file_md5 = str(hashlib.md5(f).hexdigest())
+    file_sha1 = str(hashlib.sha1(f).read()).hexdigest())
+    file_sha256 = str(hashlib.sha256(f).read()).hexdigest())
 
     #avclass
     if tknk_conf['virus_total'] == 1:
@@ -89,7 +92,7 @@ def analyze(uid):
     rules = yara.compile('index.yar')
     matches = rules.match(config['path'])
 
-    result['scans'].append({"sha256":file_sha256, "detect_rule":list(map(str,matches)), "file_name":config['target_file']})
+    result['scans'].append({"md5":file_md5, "sha1":file_sha1, "sha256":file_sha256, "detect_rule":list(map(str,matches)), "file_name":config['target_file']})
 
     cmd=[("virsh snapshot-revert " + VM_NAME + " --current")]
     p = (subprocess.Popen(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True))
