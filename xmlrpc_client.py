@@ -73,8 +73,8 @@ def analyze(uid):
  
     f = open(config['path'],'rb').read()
     file_md5 = str(hashlib.md5(f).hexdigest())
-    file_sha1 = str(hashlib.sha1(f).read()).hexdigest())
-    file_sha256 = str(hashlib.sha256(f).read()).hexdigest())
+    file_sha1 = str(hashlib.sha1(f).hexdigest())
+    file_sha256 = str(hashlib.sha256(f).hexdigest())
 
     #avclass
     if tknk_conf['virus_total'] == 1:
@@ -94,9 +94,12 @@ def analyze(uid):
 
     result['scans'].append({"md5":file_md5, "sha1":file_sha1, "sha256":file_sha256, "detect_rule":list(map(str,matches)), "file_name":config['target_file']})
 
-    cmd=[("virsh snapshot-revert " + VM_NAME + " --current")]
-    p = (subprocess.Popen(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True))
-    output = p.stderr.read().decode('utf-8')
+    #cmd=[("virsh snapshot-revert " + VM_NAME + " --current")]
+    #p = (subprocess.Popen(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True))
+    #output = p.stderr.read().decode('utf-8')
+    cmd=['virsh', 'snapshot-revert', VM_NAME, '--current']
+    p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    output = p.stderr.decode('utf-8')
     print(output)
 
     if "busy" in output:
@@ -119,7 +122,7 @@ def analyze(uid):
         vm_state = subprocess.check_output(["virsh", "domstate", VM_NAME])
         time.sleep(1)
         c+=1
-        #print (vm_state.decode('utf-8'))
+
         if "running" in str(vm_state.decode('utf-8')):
             break
         if c == 60:

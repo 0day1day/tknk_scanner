@@ -3,7 +3,7 @@ from rq import Queue
 import json, subprocess, requests, time, shutil, magic, os, uuid, math, redis
 from pathlib import Path
 from pymongo import MongoClient
-from flask import Flask, jsonify, request, url_for, abort, Response, make_response
+from flask import Flask, jsonify, request, url_for, abort, Response, make_response, send_file
 from redis import Redis
 from xmlrpc_client import analyze
 
@@ -75,8 +75,10 @@ def get_yara_file(rule_name=None):
         return make_response(jsonify(status_code=2, message="Invalid rule_name"), 400)
  
     cmd=[("find yara/ -type f | xargs grep -l -x -E -e " + "\"rule "+ rule_name +" .*{\" -e \"rule "+ rule_name +"{\" -e \"rule " + rule_name + "\"")]
-    p = (subprocess.Popen(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, close_fds=True))
-    output = p.stdout.read().decode('utf-8')
+    #p = (subprocess.Popen(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, close_fds=True))
+    p=subprocess.run(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, close_fds=True)
+    #output = p.stdout.read().decode('utf-8')
+    output = p.stdout.decode('utf-8')
 
     with open(output.strip(), 'r') as f:
         yara_file=f.read()
@@ -101,6 +103,34 @@ def job_ids():
     print(len(q))# Retrieving jobs
     queued_job_ids = q.job_ids # Gets a list of job IDs from the queue
     return jsonify(status_code=0, job_ids=queued_job_ids)
+
+@app.route('/download/<uuid>')
+def download(uuid=None):
+    uuid = os.path.basename(uuid)
+    path = "result/"
+    zipname = uuid+".zip"
+    cmd=['zip', '-r', '-P', 'infected', path+zipname, path+uuid]
+    subprocess.run(cmd, stdout=subprocess.PIPE)
+
+    return send_file(path+zipname, as_attachment=True, attachment_filename=zipname)
+
+@app.route('/search/<query>')    
+def search(query):
+    q = query.split(":")
+    search_type = "scans."+q[0]
+    value = q[1]
+    search_results=[]
+
+    print(search_type)
+    print(value)
+
+    results = list(collection.find({search_type:value}))
+
+    for r in results:
+        r.pop('_id')
+        search_results.append(r)
+    
+    return jsonify(status_code=0, results=search_results)
 
 @app.errorhandler(404)
 def not_found(error):
