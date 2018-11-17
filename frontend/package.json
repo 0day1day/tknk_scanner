@@ -21,6 +21,7 @@
     "stylus-loader": "^3.0.2"
   },
   "devDependencies": {
+    "@nuxtjs/proxy": "^1.2.4",
     "babel-eslint": "^8.2.1",
     "eslint": "^4.15.0",
     "eslint-friendly-formatter": "^3.0.0",

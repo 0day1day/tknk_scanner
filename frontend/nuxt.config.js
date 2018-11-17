@@ -39,6 +39,8 @@ module.exports = {
   modules: [
     '@nuxtjs/axios',
     'bootstrap-vue/nuxt',
+    '@nuxtjs/proxy'
+    ,
   ],
   axios: {
     baseURL: "/api"
