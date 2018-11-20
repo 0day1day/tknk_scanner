@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from rq import Queue
-import json, subprocess, requests, time, shutil, magic, os, uuid, math, redis
+import json, subprocess, requests, time, shutil, magic, os, uuid, math, redis, datetime
 from pathlib import Path
 from pymongo import MongoClient
 from flask import Flask, jsonify, request, url_for, abort, Response, make_response, send_file
@@ -29,6 +29,7 @@ def start_analyze():
     collection.insert_one(post)
 
     json_data['target_file']=json_data['path'].split("/")[1]
+    json_data['timestamp'] = str(datetime.datetime.today())
     print(json.dumps(json_data, indent=4))
     r.set(uid, json_data)
 
@@ -112,8 +113,7 @@ def job_ids():
     
     for queued_job_id in queued_job_ids:
         config = eval(r.get(queued_job_id).decode('utf-8'))
-        job = q.fetch_job(queued_job_id)
-        queued_jobs.append({"job_id":queued_job_id, "config":config, "enqueued_at":job.enqueued_at})
+        queued_jobs.append({"job_id":queued_job_id, "config":config})
 
     return jsonify(status_code=0, queued_job_ids=queued_jobs, current_job=current_job)
 

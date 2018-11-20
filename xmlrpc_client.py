@@ -57,8 +57,6 @@ def analyze(uid):
     
     #update current_job
     job=get_current_job()
-    print("get_current_job")
-    print(job.id)
     r.set('current_job_id', job.id)
 
     #config read & write
@@ -67,11 +65,10 @@ def analyze(uid):
     config['entrypoint'] = pe.OPTIONAL_HEADER.AddressOfEntryPoint
     
     #make report format
-    now = datetime.datetime.today()
     result = {"result":{"detail":"", "is_success":False},
               "run_time":str(config['time']), 
               "mode":config['mode'],
-              "timestamp":str(now.isoformat()),
+              "timestamp":str(datetime.datetime.today().isoformat()),
               "scans":[],
               "UUID":uid,
               "magic":magic.from_file(config['path']),
