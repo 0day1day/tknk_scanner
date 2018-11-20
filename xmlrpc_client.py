@@ -4,6 +4,7 @@ import xmlrpc.client
 import os, sys, shutil, json, subprocess, time, yara, hashlib, datetime, requests, magic, redis, socket, pefile
 from pathlib import Path
 from pymongo import MongoClient
+from rq import get_current_job
 from read_avclass_report import run_avclass
 
 with open("tknk.conf", 'r') as f:
@@ -53,6 +54,12 @@ def analyze(uid):
     #redis connect
     pool =  redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.StrictRedis(connection_pool=pool)
+    
+    #update current_job
+    job=get_current_job()
+    print("get_current_job")
+    print(job.id)
+    r.set('current_job_id', job.id)
 
     #config read & write
     config = eval(r.get(uid).decode('utf-8'))
@@ -94,9 +101,6 @@ def analyze(uid):
 
     result['scans'].append({"md5":file_md5, "sha1":file_sha1, "sha256":file_sha256, "detect_rule":list(map(str,matches)), "file_name":config['target_file']})
 
-    #cmd=[("virsh snapshot-revert " + VM_NAME + " --current")]
-    #p = (subprocess.Popen(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, stderr=subprocess.PIPE, close_fds=True))
-    #output = p.stderr.read().decode('utf-8')
     cmd=['virsh', 'snapshot-revert', VM_NAME, '--current']
     p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output = p.stderr.decode('utf-8')

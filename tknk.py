@@ -100,9 +100,22 @@ def page(page_num=None):
 def job_ids():
     redis_conn = Redis()
     q = Queue(connection=redis_conn)# Getting the number of jobs in the queue
-    print(len(q))# Retrieving jobs
     queued_job_ids = q.job_ids # Gets a list of job IDs from the queue
-    return jsonify(status_code=0, job_ids=queued_job_ids)
+    queued_jobs=[]
+    #print(queued_job_ids)
+    #print(r.get('current_job_id'))
+    if r.get('current_job_id') != b'0':
+        current_job_id=r.get('current_job_id')
+        current_job={"job_id":current_job_id, "config":eval(r.get(current_job_id).decode('utf-8'))}
+    else:
+        current_job={"current_job_id":r.get('current_job_id')}
+    
+    for queued_job_id in queued_job_ids:
+        config = eval(r.get(queued_job_id).decode('utf-8'))
+        job = q.fetch_job(queued_job_id)
+        queued_jobs.append({"job_id":queued_job_id, "config":config, "enqueued_at":job.enqueued_at})
+
+    return jsonify(status_code=0, queued_job_ids=queued_jobs, current_job=current_job)
 
 @app.route('/download/<uuid>')
 def download(uuid=None):
@@ -143,6 +156,7 @@ if __name__ == '__main__':
 
     pool =  redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.StrictRedis(connection_pool=pool)
+    r.set('current_job_id', "0")
 
     # Tell RQ what Redis connection to use
     redis_conn = Redis(host='localhost', port=6379)
