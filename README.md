@@ -56,6 +56,16 @@ cd ../
 sudo cp -f tknk-scanner.nginx.conf /etc/nginx/sites-available/default
 sudo systemctl restart nginx
 ```
+### Run
+```
+cd tknk_scanner/
+./tknk.py
+```
+
+```
+cd tknk_scanner/
+rq worker
+```
 
 ## Usage
 ![tknk01](https://user-images.githubusercontent.com/18203311/45243627-9043d700-b32f-11e8-8b4d-62eed195b26c.PNG)
