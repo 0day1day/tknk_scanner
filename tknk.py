@@ -99,20 +99,22 @@ def page(page_num=None):
 
 @app.route('/jobs')
 def job_ids():
-    redis_conn = Redis()
-    q = Queue(connection=redis_conn)# Getting the number of jobs in the queue
+    q = Queue(connection=Redis())# Getting the number of jobs in the queue
     queued_job_ids = q.job_ids # Gets a list of job IDs from the queue
     queued_jobs=[]
     #print(queued_job_ids)
     #print(r.get('current_job_id'))
-    if r.get('current_job_id') != b'0':
+    if r.get('current_job_id') != b'None':
         current_job_id=r.get('current_job_id')
-        current_job={"job_id":current_job_id, "config":eval(r.get(current_job_id).decode('utf-8'))}
+        config = eval(r.get(current_job_id).decode('utf-8'))
+        del config['path']
+        current_job={"job_id":current_job_id, "config":config}
     else:
-        current_job={"current_job_id":r.get('current_job_id')}
+        current_job=None
     
     for queued_job_id in queued_job_ids:
         config = eval(r.get(queued_job_id).decode('utf-8'))
+        del config['path']
         queued_jobs.append({"job_id":queued_job_id, "config":config})
 
     return jsonify(status_code=0, queued_job_ids=queued_jobs, current_job=current_job)
@@ -156,7 +158,7 @@ if __name__ == '__main__':
 
     pool =  redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.StrictRedis(connection_pool=pool)
-    r.set('current_job_id', "0")
+    r.set('current_job_id', None)
 
     # Tell RQ what Redis connection to use
     redis_conn = Redis(host='localhost', port=6379)

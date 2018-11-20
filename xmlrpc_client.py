@@ -4,8 +4,9 @@ import xmlrpc.client
 import os, sys, shutil, json, subprocess, time, yara, hashlib, datetime, requests, magic, redis, socket, pefile
 from pathlib import Path
 from pymongo import MongoClient
-from rq import get_current_job
+from rq import get_current_job, Queue
 from read_avclass_report import run_avclass
+from redis import Redis
 
 with open("tknk.conf", 'r') as f:
     tknk_conf = json.load(f)
@@ -43,6 +44,15 @@ def dump(config):
 
 def vm_down():
     print(subprocess.call(['virsh', "destroy", VM_NAME]))
+
+def current_job_init(r):
+    q = Queue(connection=Redis())# Getting the number of jobs in the queue
+    queued_job_ids = q.job_ids # Gets a list of job IDs from the queue
+
+    if len(queued_job_ids) == 0:
+        r.set('current_job_id', None)
+
+    return
 
 def analyze(uid):
 
@@ -108,6 +118,7 @@ def analyze(uid):
         result["result"]["is_success"] = False
         result["result"]["detail"] = "failed to initialize KVM: Device or resource busy"
         collection.update({u'UUID':uid},result)
+        current_job_init(r)
         os._exit(0)
         
     elif "Domain" in output:
@@ -115,6 +126,7 @@ def analyze(uid):
         result["result"]["is_success"] = False
         result["result"]["detail"] = "Domain snapshot not found: the domain does not have a current snapshot"
         collection.update({u'UUID':uid},result)
+        current_job_init(r)
         os._exit(0)
 
     c=0
@@ -127,6 +139,7 @@ def analyze(uid):
         if "running" in str(vm_state.decode('utf-8')):
             break
         if c == 60:
+            current_job_init(r)
             os._exit(0)
     if config['mode'] == "hollows_hunter":
         tools = ["tools/hollows_hunter.exe", "tools/pe-sieve.dll", "tools/mouse_emu.pyw"]
@@ -177,6 +190,7 @@ def analyze(uid):
 
         print (json.dumps(result, indent=4))
         collection.update({u'UUID':uid},result)
+        current_job_init(r)
         os._exit(0)
 
     elif is_success == True:
@@ -213,4 +227,7 @@ def analyze(uid):
     os.remove("result/dump.zip")
 
     collection.update({u'UUID':uid},result)
+    current_job_init(r)
+
+    return
 
