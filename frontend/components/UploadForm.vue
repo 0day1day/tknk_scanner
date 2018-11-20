@@ -6,12 +6,6 @@
       </div>
       <b-btn class="mt-3" variant="outline-danger" block @click="close_error_modal">Close</b-btn>
     </b-modal>
-    <b-modal ref="myModalRef" hide-footer title="Using Component Methods">
-      <div class="d-block text-center">
-
-      </div>
-      <b-btn class="mt-3" variant="outline-danger" block @click="hideModal">Close Me</b-btn>
-    </b-modal>
     <b-form @submit="upload" v-if="show">
       <b-form-group id="upload-file" label="File:" label-for="uploadFileInput" description="accept only PE binary">
         <b-form-file id="uploadFileInput" v-model="form.file" :state="Boolean(form.file)" placeholder="Select file" required />
