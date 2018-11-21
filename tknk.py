@@ -29,11 +29,11 @@ def start_analyze():
     collection.insert_one(post)
 
     json_data['target_file']=json_data['path'].split("/")[1]
-    json_data['timestamp'] = str(datetime.datetime.today())
+    json_data['timestamp'] = int(time.mktime(datetime.datetime.now().timetuple()))
     print(json.dumps(json_data, indent=4))
     r.set(uid, json_data)
 
-    job = q.enqueue(analyze, uid, job_id=uid, timeout=json_data['time']+600)
+    job = q.enqueue(analyze, uid, job_id=uid, timeout=json_data['time']+500)
 
     return jsonify(status_code=0, UUID=uid, message="Submission Success!")
 
