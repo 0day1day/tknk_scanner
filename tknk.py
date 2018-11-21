@@ -117,7 +117,7 @@ def job_ids():
         del config['path']
         queued_jobs.append({"job_id":queued_job_id, "config":config})
 
-    return jsonify(status_code=0, queued_job_ids=queued_jobs, current_job=current_job)
+    return jsonify(status_code=0, queued_jobs=queued_jobs, current_job=current_job)
 
 @app.route('/download/<uuid>')
 def download(uuid=None):
