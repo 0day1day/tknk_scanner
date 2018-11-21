@@ -129,17 +129,15 @@ def download(uuid=None):
 
     return send_file(path+zipname, as_attachment=True, attachment_filename=zipname)
 
-@app.route('/search/<query>')    
-def search(query):
-    q = query.split(":")
-    search_type = "scans."+q[0]
-    value = q[1]
+@app.route('/search/<search_type>/<value>')    
+def search(search_type=None, value=None):
+
+    if search_type != "md5" and search_type != "sha1" and search_type != "sha256":
+        return make_response(jsonify(status_code=2, message='Not found.'), 404)
+
     search_results=[]
 
-    print(search_type)
-    print(value)
-
-    results = list(collection.find({search_type:value}))
+    results = list(collection.find({"scans."+search_type:value}))
 
     for r in results:
         r.pop('_id')
