@@ -187,6 +187,7 @@ def analyze(uid):
         os.mkdir("result/" + str(uid))
         with open("result/"+ str(uid) + "/" +file_sha256+'.json', 'w') as outfile:
                 json.dump(result, outfile, indent=4)
+        shutil.copyfile(config['path'], "result/"+str(uid)+"/"+config['target_file'])
 
         print (json.dumps(result, indent=4))
         collection.update({u'UUID':uid},result)
@@ -222,6 +223,8 @@ def analyze(uid):
 
     with open("result/dump/"+file_sha256+'.json', 'w') as outfile:
         json.dump(result, outfile, indent=4)
+
+    shutil.copyfile(config['path'], "result/dump/"+config['target_file'])
 
     os.rename("result/dump/", "result/"+str(uid))
     os.remove("result/dump.zip")

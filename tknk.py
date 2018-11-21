@@ -123,6 +123,10 @@ def job_ids():
 def download(uuid=None):
     uuid = os.path.basename(uuid)
     path = "result/"
+
+    if os.path.exists(path+uuid) != True:
+        return make_response(jsonify(status_code=2, message='Not found.'), 404)
+
     zipname = uuid+".zip"
     cmd=['zip', '-r', '-P', 'infected', path+zipname, path+uuid]
     subprocess.run(cmd, stdout=subprocess.PIPE)
