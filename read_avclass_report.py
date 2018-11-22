@@ -34,12 +34,19 @@ def run_avclass (vt_key, sha256):
     r = re.compile('(%s.*%s)' % ("\[", "\]"))
     m = r.search(read_data)
 
-    fam = m.group(0)
-    fam= (eval(fam))
-    fam_json=[]
+    print(m)
 
-    for column in fam:
-        fam_json.append({"family_name":column[0], "count":column[1]})
+    if m != None:
+        fam = m.group(0)
+        fam= (eval(fam))
+        fam_json=[]
+
+        for column in fam:
+            fam_json.append({"family_name":column[0], "count":column[1]})
+    
+    else:
+        fam_json=[]
+        
 
     os.remove(sha256+".json")
     os.remove(sha256+".verbose")
