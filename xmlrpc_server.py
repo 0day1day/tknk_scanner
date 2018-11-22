@@ -163,7 +163,8 @@ def download_file():
 
 def upload_file(arg, filename):
     print ("upload... " + filename)
-    with open(filename, "wb") as handle:
+    p = Path(sys.argv[0])
+    with open(str(p.parents[0])+filename, "wb") as handle:
         handle.write(arg.data)
         return True
 
