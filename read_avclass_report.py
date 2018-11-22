@@ -34,8 +34,6 @@ def run_avclass (vt_key, sha256):
     r = re.compile('(%s.*%s)' % ("\[", "\]"))
     m = r.search(read_data)
 
-    print(m)
-
     if m != None:
         fam = m.group(0)
         fam= (eval(fam))
@@ -46,7 +44,6 @@ def run_avclass (vt_key, sha256):
     
     else:
         fam_json=[]
-        
 
     os.remove(sha256+".json")
     os.remove(sha256+".verbose")
