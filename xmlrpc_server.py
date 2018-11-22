@@ -95,6 +95,9 @@ class MODULEENTRY32(Structure):
                 ( 'szModule' , c_char * 256 ),
                 ( 'szExePath' , c_char * 260 ) ]
 
+p = Path(sys.argv[0])
+work_dir = p.parents[0]
+
 ################################################
 
 def scylla_dump(pid, copy_file, entrypoint):
@@ -110,7 +113,7 @@ def scylla_dump(pid, copy_file, entrypoint):
     ScyllaDumpProcessW = scylla.ScyllaDumpProcessW
 
     print("[*] AddressOfEntryPoint: " +  hex(entrypoint))
-    out_file = str(pid)+"_dump.exe"
+    out_file = str(work_dir.joinpath(str(pid)+"_dump.exe"))
     imagebase=me32.modBaseAddr
 
     # BOOL __stdcall ScyllaDumpProcessW(DWORD_PTR pid, const WCHAR * fileToDump, DWORD_PTR imagebase, DWORD_PTR entrypoint, const WCHAR * fileResult);
@@ -157,19 +160,19 @@ def SuspendProcess(pid):
     return
 
 def download_file():
-     with open("dump.zip", "rb") as handle:
+     with open(str(work_dir.joinpath("dump.zip")), "rb") as handle:
         return xmlrpc.client.Binary(handle.read())
 
 
 def upload_file(arg, filename):
     print ("upload... " + filename)
-    p = Path(sys.argv[0])
-    with open(str(p.parents[0])+filename, "wb") as handle:
+    
+    with open(str(work_dir.joinpath(filename)), "wb") as handle:
         handle.write(arg.data)
         return True
 
 def dump(config):
-    os.mkdir("dump")
+    os.mkdir(str(work_dir.joinpath("dump/")))
     print(config)
 
     subprocess.call(['cmd.exe', "/c", "start", "pythonw", "mouse_emu.pyw"])
@@ -190,7 +193,7 @@ def dump(config):
         print(config)
         copy_file = config['target_file'].rsplit(".")[0]+"_copy.exe"
         print(copy_file)
-        shutil.copyfile(config['target_file'], copy_file)
+        shutil.copyfile(str(work_dir.joinpath(config['target_file'])), copy_file)
 
     creation_flags = CREATE_NEW_CONSOLE 
     startupinfo         = STARTUPINFO()
@@ -199,7 +202,7 @@ def dump(config):
     startupinfo.wShowWindow = 0x0
     startupinfo.cb = sizeof(startupinfo)
     
-    if kernel32.CreateProcessW(config['target_file'],
+    if kernel32.CreateProcessW(str(work_dir.joinpath(config['target_file'])),
                                    None,
                                    None,
                                    None,
@@ -215,7 +218,7 @@ def dump(config):
         PID = process_information.dwProcessId
 
         if config["mode"] == "procdump":
-            subprocess.call(["procdump.exe", "-t", "-ma", str(PID), "/AcceptEula"],cwd="dump")
+            subprocess.call(["procdump.exe", "-t", "-ma", str(PID), "/AcceptEula"],cwd=str(work_dir.joinpath("dump/")))
 
     else:    
         print ("[*] Error with error code %d." % kernel32.GetLastError())
@@ -232,7 +235,7 @@ def dump(config):
 
     elif config["mode"] == "hollows_hunter":
         SuspendProcess(PID)
-        subprocess.call(["hollows_hunter.exe"],cwd="dump")
+        subprocess.call(["hollows_hunter.exe"], cwd=str(work_dir.joinpath("dump/")))
 
     elif config["mode"] == "diff":
         EnumProcesses(ctypes.byref(ProcessIds), cb, ctypes.byref(BytesReturned))
@@ -245,14 +248,14 @@ def dump(config):
         for pid in diff_ProcessIds:
             SuspendProcess(pid)
         for pid in new_ProcessIds:
-            subprocess.call(["procdump.exe", "-ma", str(pid), "/AcceptEula"],cwd="dump")
+            subprocess.call(["procdump.exe", "-ma", str(pid), "/AcceptEula"], cwd=str(work_dir.joinpath("dump/")))
    
     elif config["mode"] == "scylla":
         SuspendProcess(PID)
         scylla_dump(PID, copy_file, config['entrypoint'])
 
     print("[*] make zip\n")
-    subprocess.call(['powershell', "compress-archive", "-Force", "dump", "dump.zip"])
+    subprocess.call(['powershell', "compress-archive", "-Force", str(work_dir.joinpath("dump/")) , str(work_dir.joinpath("dump.zip"))])
 
 ################################################
 
