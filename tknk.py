@@ -60,11 +60,11 @@ def file_upload():
 @app.route('/results/<uuid>')
 def show_result(uuid=None):
 
-    result = list(collection.find({u"UUID":uuid}))[0]
-    result.pop('_id')
+    report = list(collection.find({u"UUID":uuid}))[0]
+    report.pop('_id')
     
-    if "scans" in result:
-        return jsonify(status_code=0, result=result)
+    if "scans" in report:
+        return jsonify(status_code=0, result=report)
     else:
         return make_response(jsonify(status_code=1, message='Analysing.'), 206)
         
@@ -102,20 +102,18 @@ def job_ids():
     q = Queue(connection=Redis())# Getting the number of jobs in the queue
     queued_job_ids = q.job_ids # Gets a list of job IDs from the queue
     queued_jobs=[]
-    #print(queued_job_ids)
-    #print(r.get('current_job_id'))
     if r.get('current_job_id') != b'None':
         current_job_id=r.get('current_job_id')
         config = eval(r.get(current_job_id).decode('utf-8'))
         del config['path']
-        current_job={"job_id":current_job_id, "config":config}
+        current_job={"id":current_job_id, "config":config}
     else:
         current_job=None
     
     for queued_job_id in queued_job_ids:
         config = eval(r.get(queued_job_id).decode('utf-8'))
         del config['path']
-        queued_jobs.append({"job_id":queued_job_id, "config":config})
+        queued_jobs.append({"id":queued_job_id, "config":config})
 
     return jsonify(status_code=0, queued_jobs=queued_jobs, current_job=current_job)
 

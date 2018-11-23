@@ -161,7 +161,7 @@ def analyze(uid):
         print("Connection error\n")
         is_success = False
         result["result"]["detail"] = "Connection error"  
-        exit()
+        #exit()
     else:
         ret = download() 
      
@@ -209,9 +209,11 @@ def analyze(uid):
             print(f.resolve())
             print(f.name)
             if (".exe" == f.suffix) or (".dll" == f.suffix) or (".dmp" == f.suffix):
-	            sha256_hash = str(hashlib.sha256(open(str(f.resolve()),'rb').read()).hexdigest())
-	            matches = rules.match(str(f.resolve()))
-	            result['scans'].append({"sha256":sha256_hash, "detect_rule":list(map(str,matches)), "file_name":f.name})
+                md5_hash = str(hashlib.md5(open(str(f.resolve()),'rb').read()).hexdigest())
+                sha1_hash = str(hashlib.sha1(open(str(f.resolve()),'rb').read()).hexdigest())
+                sha256_hash = str(hashlib.sha256(open(str(f.resolve()),'rb').read()).hexdigest())
+                matches = rules.match(str(f.resolve()))
+                result['scans'].append({"md5":md5_hash, "sha1":sha1_hash, "sha256":sha256_hash, "detect_rule":list(map(str,matches)), "file_name":f.name})
 
     for scan in result["scans"]:
         if scan["detect_rule"] != []:
