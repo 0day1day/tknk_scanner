@@ -1,11 +1,11 @@
 <template>
-<div class="result-container">
-  <div class="progress-message" v-if="is_processing">
+<page>
+  <div v-if="is_processing">
     <i class="fas fa-spinner fa-spin fa-10x"></i>
     <p>Now analyzing ...</p>
   </div>
-  <div class="result-message" v-if="!is_processing">
-    <b-container>
+  <div v-if="!is_processing">
+    <b-container >
       <b-row>
         <b-col>
           <h1>Result</h1>
@@ -37,12 +37,17 @@
       </b-row>
     </b-container>
   </div>
-</div>
+</page>
 </template>
 
 <script>
+  import Page from '~/components/Page'
+
   export default {
     name: "result-index",
+    components: {
+      Page
+    },
     data() {
       return {
         interval: null

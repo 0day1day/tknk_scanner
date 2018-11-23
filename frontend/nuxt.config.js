@@ -39,15 +39,14 @@ module.exports = {
   modules: [
     '@nuxtjs/axios',
     'bootstrap-vue/nuxt',
-    '@nuxtjs/proxy'
-    ,
+    '@nuxtjs/proxy',
   ],
   axios: {
-    baseURL: "/api"
+    baseURL: "/api",
   },
   proxy: {
     '/api/': {
-      'target': 'http://10.39.1.201:8000/',
+      'target': 'http://localhost:8000/',
       'pathRewrite': {
         '^/api': '/'
       }

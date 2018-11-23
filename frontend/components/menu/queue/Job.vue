@@ -1,12 +1,12 @@
 <template>
-  <b-dropdown-item :to="result_link"><i :class="status_icon"></i>{{ resultId }}</b-dropdown-item>
+  <b-dropdown-item :to="result_link"><i :class="status_icon"></i>{{job.job_id}}</b-dropdown-item>
 </template>
 
 <script>
   export default {
     name: "Job",
     props: [
-      "resultId"
+      "job"
     ],
     data() {
       return {
@@ -27,7 +27,7 @@
     },
     methods: {
       fetch_result() {
-        this.$axios.get(`/results/${this.resultId}`).then(res => {
+        this.$axios.get(`/results/${this.job.job_id}`).then(res => {
           this.status = res.data["status_code"];
           if (res.data["status_code"] === 0){
             this.is_success = res.data["result"]["result"]["is_success"];
@@ -57,7 +57,7 @@
         return {
           name: "results-resultId",
           params: {
-            resultId: this.resultId
+            resultId: this.job.job_id
           }
         }
       }
