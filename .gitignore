@@ -1,0 +1,4 @@
+target/
+result/
+yara/
+__pycache__/
