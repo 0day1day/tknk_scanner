@@ -11,9 +11,9 @@ export const mutations = {
   },
   change_current(state, new_current_jobs) {
     // stop unnecessary changing
-    if (state.current !== null && new_current_jobs.job_id === state.current.job_id) return null;
+    if ((state.current === null && new_current_jobs === null) || (new_current_jobs !== null && state.current !== null && new_current_jobs.id === state.current.id)) return null;
 
-    state.finished.push(state.current);
+    if (state.current !== null) state.finished.push(state.current);
     state.current = new_current_jobs;
   }
 };

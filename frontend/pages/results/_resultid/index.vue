@@ -1,9 +1,9 @@
 <template>
 <page>
-  <div v-if="is_processing">
+  <Message class="progress-message" v-if="is_processing">
     <i class="fas fa-spinner fa-spin fa-10x"></i>
     <p>Now analyzing ...</p>
-  </div>
+  </Message>
   <div v-if="!is_processing">
     <b-container >
       <b-row>
@@ -41,12 +41,14 @@
 </template>
 
 <script>
-  import Page from '~/components/Page'
+  import Page from '~/components/ui/Page'
+  import Message from '~/components/ui/Message'
 
   export default {
     name: "result-index",
     components: {
-      Page
+      Page,
+      Message
     },
     data() {
       return {
@@ -76,7 +78,7 @@
     validate({ params }){
       return /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(params.resultid);
     },
-    created () {
+    mounted () {
       this.fetch_data();
       this.interval = setInterval(this.fetch_data, 5000);
     },

@@ -1,5 +1,5 @@
 <template>
-  <div id="message-container">
+  <div class="message-container">
     <div id="message-content">
       <slot></slot>
     </div>
@@ -13,12 +13,9 @@
 </script>
 
 <style lang="stylus" scoped>
-  #message-container
+  .message-container
     display flex
     justify-content center
     align-items center
-  #message-content
-    width 100%
-    height 100%
-
+    min-height calc(100vh - 60px)
 </style>

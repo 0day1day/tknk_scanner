@@ -18,8 +18,9 @@
     justify-content center
     width 100vw
     min-width 100vw
+    min-height calc(100vh - 60px)
     #page-content
-      height calc(100% - 60px)
+      height 100%
       min-width 80vw
       width 80vw
 

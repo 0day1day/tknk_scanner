@@ -1,7 +1,7 @@
 <template>
   <div>
     <b-navbar-nav>
-      <b-nav-item :to="{}">{{ label }}</b-nav-item>
+      <b-nav-item :to="{ name: 'jobs' }">{{ label }}</b-nav-item>
     </b-navbar-nav>
   </div>
 </template>
@@ -10,11 +10,6 @@
 
   export default {
     name: "Queue",
-    data() {
-      return {
-        interval: null
-      }
-    },
     mounted() {
       this.next_tick();
     },
