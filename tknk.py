@@ -3,7 +3,7 @@ from rq import Queue
 import json, subprocess, requests, time, shutil, magic, os, uuid, math, redis, datetime
 from pathlib import Path
 from pymongo import MongoClient
-from flask import Flask, jsonify, request, url_for, abort, Response, make_response, send_file
+from flask import Flask, jsonify, request, url_for, abort, Response, make_response, send_file, abort
 from redis import Redis
 from xmlrpc_client import analyze
 
@@ -22,14 +22,19 @@ def start_analyze():
         return jsonify(status_code=2, message="Content-Type Error.")
 
     json_data = request.json
+    p = Path(json_data['path'])
+    json_data['target_file']=p.name
+    json_data['timestamp'] = int(time.mktime(datetime.datetime.now().timetuple()))
+
+    path = "target/"
+    if os.path.exists(path+json_data['target_file']) != True:
+        return abort(404)
 
     uid = str(uuid.uuid4())
     post = {"UUID":uid}
 
     collection.insert_one(post)
 
-    json_data['target_file']=json_data['path'].split("/")[1]
-    json_data['timestamp'] = int(time.mktime(datetime.datetime.now().timetuple()))
     print(json.dumps(json_data, indent=4))
     r.set(uid, json_data)
 
@@ -41,7 +46,8 @@ def start_analyze():
 def file_upload():
     f = request.files['file']
     filename = (f.filename)
-    f.save(os.path.join(UPLOAD_FOLDER, filename))
+    base= Path(UPLOAD_FOLDER)
+    f.save(str(base/filename))
 
     file_type = magic.from_file("target/"+filename)
 
@@ -60,7 +66,10 @@ def file_upload():
 @app.route('/results/<uuid>')
 def show_result(uuid=None):
 
-    report = list(collection.find({u"UUID":uuid}))[0]
+    report = collection.find_one({u"UUID":uuid})
+    if report == None:
+        return abort(404)
+
     report.pop('_id')
     
     if "scans" in report:
@@ -75,7 +84,7 @@ def get_yara_file(rule_name=None):
     if rule_name_check.isalnum() == False:
         return make_response(jsonify(status_code=2, message="Invalid rule_name"), 400)
  
-    cmd=[("find yara/ -type f | xargs grep -l -x -E -e " + "\"rule "+ rule_name +" .*{\" -e \"rule "+ rule_name +"{\" -e \"rule " + rule_name + "\"")]
+    cmd=[("find yara/ -type f | xargs -I {} grep {} -l -x -E -e " + "\"rule "+ rule_name +" .*{\" -e \"rule "+ rule_name +"{\" -e \"rule " + rule_name + "\"")]
     p=subprocess.run(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, close_fds=True)
     output = p.stdout.decode('utf-8')
 
@@ -126,7 +135,7 @@ def download(uuid=None):
     path = "result/"
 
     if os.path.exists(path+uuid) != True:
-        return make_response(jsonify(status_code=2, message='Not found.'), 404)
+        return abort(404)
 
     zipname = uuid+".zip"
     cmd=['zip', '-r', '-P', 'infected', path+zipname, path+uuid]
@@ -138,7 +147,7 @@ def download(uuid=None):
 def search(search_type=None, value=None):
 
     if search_type != "md5" and search_type != "sha1" and search_type != "sha256":
-        return make_response(jsonify(status_code=2, message='Not found.'), 404)
+        return abort(404)
 
     search_results=[]
 
@@ -168,5 +177,3 @@ if __name__ == '__main__':
     q = Queue(connection=redis_conn)  # no args implies the default queue
 
     app.run(host='0.0.0.0', port=8000)
-    
-
