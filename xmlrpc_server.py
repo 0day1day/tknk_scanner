@@ -218,7 +218,7 @@ def dump(config):
         PID = process_information.dwProcessId
 
         if config["mode"] == "procdump":
-            cmd=["cmd", "/c", "start", "powershell", "Start-Sleep", config["time"], ";", "taskkill", "/PID", PID, ";"]
+            cmd=["cmd", "/c", "start", "powershell", "Start-Sleep", str(config["time"]), ";", "taskkill", "/PID", str(PID), ";"]
 
             subprocess.call(cmd)
             subprocess.call(["procdump.exe", "-t", "-ma", str(PID), "/AcceptEula"],cwd=str(work_dir.joinpath("dump/")))
@@ -233,7 +233,7 @@ def dump(config):
 
     print("[*] dumping\n")
 
-    elif config["mode"] == "hollows_hunter":
+    if config["mode"] == "hollows_hunter":
         SuspendProcess(PID)
         subprocess.call(["hollows_hunter.exe"], cwd=str(work_dir.joinpath("dump/")))
 
