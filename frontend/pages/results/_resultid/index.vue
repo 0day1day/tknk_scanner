@@ -5,7 +5,7 @@
     <p>Now analyzing ...</p>
   </Message>
   <div v-if="!is_processing">
-    <b-container >
+    <b-container fluid>
       <b-row>
         <b-col>
           <h1>Result</h1>
@@ -13,7 +13,7 @@
       </b-row>
       <b-row>
         <b-col sm="7" class="status">
-          <div class="status-success" v-if="is_success">
+          <div class="status-success" v-if="report.result.is_success">
             <i class="fas fa-check-circle fa-10x"></i>
             <h2>Success!</h2>
           </div>
@@ -23,12 +23,12 @@
           </div>
         </b-col>
         <b-col sm="5">
-          <b-table :items="status_summary" class="summary-table" stacked></b-table>
+          <b-table :items="summary" class="summary-table" stacked></b-table>
         </b-col>
       </b-row>
       <b-row>
         <b-col>
-          <b-table :items="dropped_files" class="summary-table">
+          <b-table :items="scanned_files" class="summary-table">
             <template slot="detect_rule" slot-scope="data">
               <b-badge variant="danger" v-for="(l, k) in data.value" :key="k" class="detect-label">{{ l }}</b-badge>
             </template>
@@ -43,6 +43,7 @@
 <script>
   import Page from '~/components/ui/Page'
   import Message from '~/components/ui/Message'
+  import { mapState, mapGetters } from 'vuex'
 
   export default {
     name: "result-index",
@@ -57,39 +58,30 @@
     },
     computed: {
       is_processing () {
-        return this.$store.state.result.status_code === 1 || this.$store.state.result.status_code === null;
+        return this.report.status_code === 1 || this.report.status_code === null;
       },
-      is_success() {
-        return this.$store.state.result.result.is_success;
-      },
-      status_summary() {
-        return [
-          { Mode: this.$store.state.result.mode,
-            Detail: this.$store.state.result.result.detail,
-            "Running Time": this.$store.state.result.run_time,
-            Timestamp: this.$store.state.result.timestamp
-          }
-        ]
-      },
-      dropped_files() {
-        return this.$store.state.result.scans;
-      }
+      ... mapState([ 'report' ]),
+      ... mapGetters({
+        'scanned_files': 'report/scanned_files',
+        'summary': 'report/summary',
+      })
     },
     validate({ params }){
       return /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/.test(params.resultid);
     },
-    mounted () {
+    created () {
       this.fetch_data();
       this.interval = setInterval(this.fetch_data, 5000);
     },
     methods: {
       async fetch_data() {
-        if (this.$store.state.result.status_code === null || this.$store.state.result.status_code === 1) {
-          let res = await this.$axios.$get('/results/' + this.$route.params.resultid).catch(e => {
+        if (this.report.status_code === null || this.report.status_code === 1) {
+          let res = await this.$axios.$get('/results/' + this.$route.params.resultid, { progress: false }).catch(e => {
             clearInterval(this.interval);
+            throw this.$root.error(e);
           });
           if(res.status_code !== 1) {
-            this.$store.commit('result/set_result', res);
+            this.$store.commit('report/set_result', res);
           }
         } else {
           clearInterval(this.interval);
@@ -98,12 +90,15 @@
     },
     beforeDestroy() {
       clearInterval(this.interval);
-      this.$store.commit('result/destoroy')
+      this.$store.commit('report/destoroy')
     },
   }
 </script>
 
 <style lang="stylus" scoped>
+  .analyze-result
+    width 100%
+    margin 0
   .progress-message
     text-align center
     i
@@ -113,18 +108,14 @@
     display flex
     justify-content center
     align-items center
-  .result-message
-    height calc(100% - 60px)
-    min-width 80%
-    max-width 80%
-    .status
-      text-align center
-      .status-success
-        color #00ff00
-      .status-fail
-        color #ff3300
-  .detect-label
-    margin 0 0.5em
+  .status
+    text-align center
+    .status-success
+      color #00ff00
+    .status-fail
+      color #ff3300
+    .detect-label
+      margin 0 0.5em
 </style>
 <style lang="stylus">
   .table
