@@ -106,7 +106,7 @@ def analyze(uid):
     rules = yara.compile('index.yar')
     matches = rules.match(config['path'])
 
-    result['scans'].append({"md5":file_md5, "sha1":file_sha1, "sha256":file_sha256, "detect_rule":list(map(str,matches)), "file_name":config['target_file']})
+    result['target_scan']=({"md5":file_md5, "sha1":file_sha1, "sha256":file_sha256, "detect_rule":list(map(str,matches)), "file_name":config['target_file']})
 
     cmd=['virsh', 'snapshot-revert', VM_NAME, '--current']
     p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

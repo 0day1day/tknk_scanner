@@ -64,7 +64,7 @@ def show_result(uuid=None):
     report.pop('_id')
     
     if "scans" in report:
-        return jsonify(status_code=0, result=report)
+        return jsonify(status_code=0, report=report)
     else:
         return make_response(jsonify(status_code=1, message='Analysing.'), 206)
         
@@ -76,15 +76,18 @@ def get_yara_file(rule_name=None):
         return make_response(jsonify(status_code=2, message="Invalid rule_name"), 400)
  
     cmd=[("find yara/ -type f | xargs grep -l -x -E -e " + "\"rule "+ rule_name +" .*{\" -e \"rule "+ rule_name +"{\" -e \"rule " + rule_name + "\"")]
-    #p = (subprocess.Popen(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, close_fds=True))
     p=subprocess.run(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, close_fds=True)
-    #output = p.stdout.read().decode('utf-8')
     output = p.stdout.decode('utf-8')
 
-    with open(output.strip(), 'r') as f:
-        yara_file=f.read()
+    print(output)
 
-    return jsonify(status_code=0, result=yara_file)
+    try:
+        with open(output.strip(), 'r') as f:
+            yara_file=f.read()
+    except:
+         return make_response(jsonify(status_code=2, message="File not found"), 404)
+
+    return jsonify(status_code=0, rule=yara_file)
 
 @app.route('/page/<page_num>')
 def page(page_num=None):

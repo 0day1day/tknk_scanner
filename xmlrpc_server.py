@@ -218,20 +218,20 @@ def dump(config):
         PID = process_information.dwProcessId
 
         if config["mode"] == "procdump":
+            cmd=["cmd", "/c", "start", "powershell", "Start-Sleep", config["time"], ";", "taskkill", "/PID", PID, ";"]
+
+            subprocess.call(cmd)
             subprocess.call(["procdump.exe", "-t", "-ma", str(PID), "/AcceptEula"],cwd=str(work_dir.joinpath("dump/")))
 
     else:    
         print ("[*] Error with error code %d." % kernel32.GetLastError())
         return
 
-    print(("[*] wait for unpack %d seconds\n") % config["time"])
-        
-    time.sleep(config["time"])
+    if config["mode"] != "procdump": 
+        print(("[*] wait for unpack %d seconds\n") % config["time"])   
+        time.sleep(config["time"])
 
     print("[*] dumping\n")
-
-    if config["mode"] == "procdump":
-        kernel32.TerminateProcess(PID)
 
     elif config["mode"] == "hollows_hunter":
         SuspendProcess(PID)
