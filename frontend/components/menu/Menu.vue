@@ -1,7 +1,7 @@
 <template>
   <b-navbar toggleable="md" type="dark" class="navbar">
     <b-navbar-brand :to="{'name': 'index'}">
-      <img src="~/assets/tknk.png" class="d-inline-block align-top" alt="BV" />
+      <img src="~/assets/tknk.png" class="d-inline-block align-top" alt="tknk_scnner" />
       tknk_scanner
     </b-navbar-brand>
     <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
@@ -12,12 +12,20 @@
       </b-navbar-nav>
 
     </b-collapse>
+    <b-navbar-nav class="ml-auto">
+      <queue right />
+    </b-navbar-nav>
   </b-navbar>
 </template>
 
 <script>
+  import Queue from '~/components/menu/queue/Queue.vue'
+
   export default {
-    name: "Menu"
+    name: "Menu",
+    components: {
+      Queue
+    }
   }
 </script>
 

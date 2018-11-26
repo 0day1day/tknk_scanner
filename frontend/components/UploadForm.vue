@@ -24,7 +24,6 @@
           Upload
         </template>
       </b-button>
-
     </b-form>
   </div>
 </template>
@@ -40,9 +39,10 @@
           time: 120
         },
         scan_mode: [
-          {value: 'hollows_hunter', text: 'hollows_hunter - Using hollows_hunter'},
-          {value: 'procdump', text: 'procdump - Using procdump dump'},
-          {value: 'diff', text: "diff - Dump the newly created process while running with procdump"}
+          {value: 'hollows_hunter', text: 'hollows_hunter'},
+          {value: 'procdump', text: 'procdump'},
+          {value: 'diff', text: "diff"},
+          {value: 'scylla', text: "scylla"}
         ],
         error_message: null,
         is_uploading: false,
