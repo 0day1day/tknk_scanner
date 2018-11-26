@@ -151,11 +151,16 @@ def search(search_type=None, value=None):
 
     search_results=[]
 
-    results = list(collection.find({"scans."+search_type:value}))
+    result = collection.find({"target_scan."+search_type:value})
+
+    results = list(result)
 
     for r in results:
         r.pop('_id')
         search_results.append(r)
+
+    if len(search_results) == 0:
+        abort(404)
     
     return jsonify(status_code=0, results=search_results)
 
