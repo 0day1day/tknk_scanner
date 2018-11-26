@@ -51,7 +51,8 @@ $ sudo python3 setup.py install
 cd frontend/
 npm install
 npm run generate
-sudo cp -rf dist/* /usr/share/nginx/html/
+mkdir /usr/share/nginx/tknk/
+sudo cp -rf dist/* /usr/share/nginx/tknk/
 cd ../
 sudo cp -f tknk-scanner.nginx.conf /etc/nginx/sites-available/default
 sudo systemctl restart nginx
