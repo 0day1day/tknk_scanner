@@ -218,7 +218,7 @@ def dump(config):
         PID = process_information.dwProcessId
 
         if config["mode"] == "procdump":
-            cmd=["cmd", "/c", "start", "powershell", "Start-Sleep", str(config["time"]), ";", "taskkill", "/PID", str(PID), ";"]
+            cmd=["cmd", "/c", "start", "powershell", "-windowstyle", "hidden","Start-Sleep", str(config["time"]), ";", "taskkill", "/F", "/PID", str(PID), ";"]
 
             subprocess.call(cmd)
             subprocess.call(["procdump.exe", "-t", "-ma", str(PID), "/AcceptEula"],cwd=str(work_dir.joinpath("dump/")))
