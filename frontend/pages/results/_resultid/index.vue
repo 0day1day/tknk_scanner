@@ -12,7 +12,7 @@
         </b-col>
       </b-row>
       <b-row>
-        <b-col sm="7" class="status">
+        <b-col sm="4" class="status">
           <div class="status-success" v-if="report.result.is_success">
             <i class="fas fa-check-circle fa-10x"></i>
             <h2>Success!</h2>
@@ -22,13 +22,16 @@
             <h2>Failed</h2>
           </div>
         </b-col>
-        <b-col sm="5">
-          <b-table :items="summary" class="summary-table" stacked></b-table>
+        <b-col sm="4">
+          <b-table :items="scan_summary" class="summary-table" stacked></b-table>
+        </b-col>
+        <b-col sm="4">
+          <b-table :items="file_summary" class="summary-table" stacked></b-table>
         </b-col>
       </b-row>
       <b-row>
         <b-col>
-          <b-table :items="scanned_files" class="summary-table">
+          <b-table :items="report.scans" class="summary-table">
             <template slot="detect_rule" slot-scope="data">
               <b-badge variant="danger" v-for="(l, k) in data.value" :key="k" class="detect-label">{{ l }}</b-badge>
             </template>
@@ -62,8 +65,8 @@
       },
       ... mapState([ 'report' ]),
       ... mapGetters({
-        'scanned_files': 'report/scanned_files',
-        'summary': 'report/summary',
+        'file_summary': 'report/file_summary',
+        'scan_summary': 'report/scan_summary'
       })
     },
     validate({ params }){

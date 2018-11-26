@@ -10,16 +10,22 @@ export const state = () => ({
 });
 
 export const getters = {
-  scanned_files(state) {
-    return [state.target_scan].concat(state.scans);
-  },
-  summary(state) {
+  scan_summary(state) {
     return [
       {
         Mode: state.mode,
         Detail: state.result.detail,
         "Running Time": state.run_time,
-        Timestamp: state.timestamp
+        Timestamp: state.timestamp,
+      }
+    ]
+  },
+  file_summary(state){
+    return [
+      {
+        "File Name": state.target_scan.file_name,
+        Hashes: [state.target_scan.md5, state.target_scan.sha1, state.target_scan.sha256],
+        "Detect Rules": state.target_scan.detect_rule
       }
     ]
   },
