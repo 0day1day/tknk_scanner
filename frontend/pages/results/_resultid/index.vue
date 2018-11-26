@@ -31,11 +31,15 @@
       </b-row>
       <b-row>
         <b-col>
-          <b-table :items="report.scans" class="summary-table">
+          <h2>Dropped Files</h2>
+          <b-table :items="report.scans" class="summary-table" v-if="report.scans.length !== 0">
             <template slot="detect_rule" slot-scope="data">
               <b-badge variant="danger" v-for="(l, k) in data.value" :key="k" class="detect-label">{{ l }}</b-badge>
             </template>
           </b-table>
+          <div class="no-dropped" v-else>
+            <p>No file dropped.</p>
+          </div>
         </b-col>
       </b-row>
     </b-container>
@@ -119,7 +123,11 @@
       color #ff3300
     .detect-label
       margin 0 0.5em
+  .no-dropped
+    padding-left 1em
+    font-style italic
 </style>
+
 <style lang="stylus">
   .table
     td

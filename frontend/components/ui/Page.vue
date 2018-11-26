@@ -16,9 +16,8 @@
   #page-container
     display flex
     justify-content center
-    width 100vw
-    min-width 100vw
     min-height calc(100vh - 60px)
+    padding-top 0.5em
     #page-content
       height 100%
       min-width 80vw
