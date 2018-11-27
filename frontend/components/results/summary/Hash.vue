@@ -53,7 +53,7 @@
 
 <style lang="stylus" scoped>
   #hash
-    word-break break-word
+    word-break break-all
     i
       padding-right 0.25em
 </style>

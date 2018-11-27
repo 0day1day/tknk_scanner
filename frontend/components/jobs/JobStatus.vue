@@ -52,7 +52,7 @@
           return templates.concat(["fa-times-circle", "fail"]);
         } else {
           // not implemented state
-          return templates.concat(["fa-question-circle"]);
+          return templates.concat(["fa-question-circle", "unknown"]);
         }
       }
     }
@@ -60,7 +60,9 @@
 </script>
 
 <style lang="stylus" scoped>
-  i
+  .success
+  .fail
+  .unknown
     padding-right 1em
   .success
     color #00ff00
