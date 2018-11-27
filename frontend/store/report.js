@@ -14,20 +14,34 @@ export const getters = {
     return [
       {
         Mode: state.mode,
-        Detail: state.result.detail,
+        Detail: state.result === null ? "" : state.result.detail,
         "Running Time": state.run_time,
         Timestamp: state.timestamp,
       }
     ]
   },
   file_summary(state){
-    return [
-      {
-        "File Name": state.target_scan.file_name,
-        Hashes: [state.target_scan.md5, state.target_scan.sha1, state.target_scan.sha256],
-        "Detect Rules": state.target_scan.detect_rule
-      }
-    ]
+    if(state.target_scan === null){
+      return [
+        {
+          file_name: null,
+          "MD5": null,
+          "SHA1": null,
+          "SHA256": null,
+          detect_rules: null
+        }
+      ]
+    } else {
+      return [
+        {
+          file_name: state.target_scan === null ? null : state.target_scan.file_name,
+          "MD5": state.target_scan.md5,
+          "SHA1": state.target_scan.sha1,
+          "SHA256": state.target_scan.sha256,
+          detect_rules: state.target_scan.detect_rule
+        }
+      ]
+    }
   },
 };
 

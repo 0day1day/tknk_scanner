@@ -12,7 +12,7 @@
         </b-col>
       </b-row>
       <b-row>
-        <b-col sm="4" class="status">
+        <b-col sm="2" class="status">
           <div class="status-success" v-if="report.result.is_success">
             <i class="fas fa-check-circle fa-10x"></i>
             <h2>Success!</h2>
@@ -22,19 +22,36 @@
             <h2>Failed</h2>
           </div>
         </b-col>
-        <b-col sm="4">
-          <b-table :items="scan_summary" class="summary-table" stacked></b-table>
+        <b-col sm="3">
+          <b-table :items="scan_summary" class="summary-table" stacked fixed small></b-table>
         </b-col>
-        <b-col sm="4">
-          <b-table :items="file_summary" class="summary-table" stacked></b-table>
+        <b-col sm="7">
+          <b-table :items="file_summary" class="summary-table" stacked fixed small>
+            <template slot="detect_rules" slot-scope="rules">
+              <div class="badges">
+                <b-badge variant="danger" v-for="(l, k) in rules['value']" :key="k" class="detect-label" >{{ l }}</b-badge>
+              </div>
+            </template>
+            <template slot="MD5" slot-scope="md5">
+              <hash :hash="md5.value" />
+            </template>
+            <template slot="SHA1" slot-scope="sha1">
+              <hash :hash="sha1.value" />
+            </template>
+            <template slot="SHA256" slot-scope="sha256">
+              <hash :hash="sha256.value" />
+            </template>
+          </b-table>
         </b-col>
       </b-row>
       <b-row>
         <b-col>
           <h2>Dropped Files</h2>
-          <b-table :items="report.scans" class="summary-table" v-if="report.scans.length !== 0">
-            <template slot="detect_rule" slot-scope="data">
-              <b-badge variant="danger" v-for="(l, k) in data.value" :key="k" class="detect-label">{{ l }}</b-badge>
+          <b-table :items="report.scans" v-if="report.scans.length !== 0" :fields="dropped_file_header" class="dropped-file-table">
+            <template slot="detect_rule" slot-scope="data" class="detect-rules">
+              <div class="badges">
+                <b-badge variant="danger" v-for="(l, k) in data.value" :key="k" class="detect-label" v-if="data.value.length !== 0">{{ l }}</b-badge>
+              </div>
             </template>
           </b-table>
           <div class="no-dropped" v-else>
@@ -50,13 +67,15 @@
 <script>
   import Page from '~/components/ui/Page'
   import Message from '~/components/ui/Message'
+  import Hash from '~/components/results/Hash'
   import { mapState, mapGetters } from 'vuex'
 
   export default {
     name: "result-index",
     components: {
       Page,
-      Message
+      Message,
+      Hash
     },
     data() {
       return {
@@ -66,6 +85,19 @@
     computed: {
       is_processing () {
         return this.report.status_code === 1 || this.report.status_code === null;
+      },
+      dropped_file_header() {
+
+        return [
+          {
+            key: 'file_name',
+            label: 'File Name'
+          },
+          {
+            key: 'detect_rules',
+            label: 'Detect Rule'
+          },
+        ]
       },
       ... mapState([ 'report' ]),
       ... mapGetters({
@@ -97,7 +129,7 @@
     },
     beforeDestroy() {
       clearInterval(this.interval);
-      this.$store.commit('report/destoroy')
+      this.$store.commit('report/destoroy');
     },
   }
 </script>
@@ -123,6 +155,13 @@
       color #ff3300
     .detect-label
       margin 0 0.5em
+  .hashes
+    word-break break-word
+    font-size 0.8em
+  .badges
+    word-break break-word
+    span
+      margin 0 0.5em
   .no-dropped
     padding-left 1em
     font-style italic
@@ -132,4 +171,7 @@
   .table
     td
       border-top none
+  .dropped-file-table
+    td
+      border-top 1px solid gray
 </style>
