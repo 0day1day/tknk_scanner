@@ -228,7 +228,7 @@ def dump(config):
         return
 
     if config["mode"] != "procdump": 
-        print(("[*] wait for unpack %d seconds\n") % config["time"])   
+        print(("[*] wait for dump %d seconds\n") % config["time"])   
         time.sleep(config["time"])
 
     print("[*] dumping\n")
