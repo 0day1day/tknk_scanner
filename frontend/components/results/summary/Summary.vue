@@ -6,8 +6,8 @@
     <b-col sm="3">
       <scan-summary :scan-summary="scan_summary" />
     </b-col>
-    <b-col sm="3">
-      <detects-summary :scan-summary="detects_summary" />
+    <b-col sm="4">
+      <detects-summary :detects-summary="detects_summary" />
     </b-col>
     <b-col sm="4">
       <file-summary :file-summary="file_summary" />

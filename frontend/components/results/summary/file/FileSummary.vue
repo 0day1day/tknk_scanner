@@ -1,10 +1,5 @@
 <template>
   <b-table :items="fileSummary" class="summary-table" stacked fixed small>
-    <template slot="detect_rules" slot-scope="rules">
-      <div class="badges">
-        <b-badge variant="danger" v-for="(l, k) in rules['value']" :key="k">{{ l }}</b-badge>
-      </div>
-    </template>
     <template slot="MD5" slot-scope="md5">
       <hash :hash="md5.value" />
     </template>
@@ -32,8 +27,4 @@
 </script>
 
 <style lang="stylus" scoped>
-  .badges
-    word-break break-word
-    span
-      margin 0 0.5em 0 0
 </style>

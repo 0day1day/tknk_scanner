@@ -11,7 +11,8 @@
           <h1>Result</h1>
         </b-col>
       </b-row>
-      <result-summary />
+      <scan-summary />
+      <file-summary />
       <b-row>
         <b-col>
           <h2>Dropped Files</h2>
@@ -30,14 +31,16 @@
 <script>
   import Page from '~/components/ui/Page'
   import Message from '~/components/ui/Message'
-  import ResultSummary from '~/components/results/summary/Summary'
+  import ScanSummary from '~/components/results/summary/scan/Summary'
+  import FileSummary from '~/components/results/summary/file/Summary'
   import Files from '~/components/results/files/Files'
   import { mapState } from 'vuex'
 
   export default {
     name: "result-index",
     components: {
-      ResultSummary,
+      ScanSummary,
+      FileSummary,
       Page,
       Message,
       Files,

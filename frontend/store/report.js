@@ -6,17 +6,28 @@ export const state = () => ({
   scans: null,
   timestamp: null,
   status_code: null,
-  target_scan: null
+  target_scan: null,
+  avclass: null,
+  die: null
 });
 
 export const getters = {
+  detects_summary(state) {
+    return [
+      {
+        "AVClass": state.avclass,
+        "DIE Indicators": state.die,
+        detect_rules: state.target_scan === null ? null : state.target_scan.detect_rule
+      }
+    ]
+  },
   scan_summary(state) {
     return [
       {
         Mode: state.mode,
         Detail: state.result === null ? "" : state.result.detail,
         "Running Time": state.run_time,
-        Timestamp: state.timestamp,
+        Timestamp: state.timestamp
       }
     ]
   },
@@ -28,7 +39,6 @@ export const getters = {
           "MD5": null,
           "SHA1": null,
           "SHA256": null,
-          detect_rules: null
         }
       ]
     } else {
@@ -38,7 +48,6 @@ export const getters = {
           "MD5": state.target_scan.md5,
           "SHA1": state.target_scan.sha1,
           "SHA256": state.target_scan.sha256,
-          detect_rules: state.target_scan.detect_rule
         }
       ]
     }
@@ -55,6 +64,8 @@ export const mutations = {
     state.timestamp = d.report.timestamp;
     state.status_code = d.status_code;
     state.target_scan = d.report.target_scan;
+    state.avclass = d.report.avclass;
+    state.die = d.report.die;
   },
   destoroy(state) {
     state.uuid = null;
@@ -65,5 +76,7 @@ export const mutations = {
     state.timestamp = null;
     state.status_code = null;
     state.target_scan = null;
+    state.avclass = null;
+    state.die = null;
   }
 };
