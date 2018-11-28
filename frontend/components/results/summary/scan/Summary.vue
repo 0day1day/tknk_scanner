@@ -30,4 +30,7 @@
 </script>
 
 <style lang="stylus" scoped>
+  .download-wrapper
+    width 100%
+    text-align center
 </style>

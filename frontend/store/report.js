@@ -33,10 +33,11 @@ export const getters = {
   scan_summary(state) {
     return [
       {
-        Mode: state.mode,
-        Detail: state.result === null ? "" : state.result.detail,
-        "Running Time": state.run_time,
-        Timestamp: state.timestamp
+        mode: state.mode,
+        detail: state.result === null ? "" : state.result.detail,
+        running_time: state.run_time,
+        timestamp: state.timestamp,
+        uuid: state.uuid
       }
     ]
   },
@@ -67,7 +68,7 @@ export const getters = {
 
 export const mutations = {
   set_result(state, d) {
-    state.uuid = d.report.uuid;
+    state.uuid = d.report.UUID;
     state.mode = d.report.mode;
     state.result = d.report.result;
     state.run_time = d.report.run_time;
