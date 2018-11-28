@@ -5,13 +5,13 @@
         <i class="fas fa-file fa-10x"></i>
         <h3 class="file_name">
           {{ file_name }}
-          <b-badge :variant="is_in_vt ? 'info' : 'warning'">
-            VirusTotal
-            <b-badge variant="light" class="num">
-              {{ is_in_vt ? "Found" : "Not Found" }}
-            </b-badge>
-          </b-badge>
         </h3>
+        <b-badge :variant="is_in_vt ? 'info' : 'warning'" :href="is_in_vt ? 'https://www.virustotal.com/#/file/' + sha256 : null" target="_blank">
+          VirusTotal
+          <b-badge variant="light" class="num">
+            {{ is_in_vt ? "Found" : "Not Found" }}
+          </b-badge>
+        </b-badge>
       </div>
     </b-col>
     <b-col sm="5">
@@ -39,7 +39,8 @@
         'file_summary': 'report/file_summary',
         'detects_summary': 'report/detects_summary',
         'file_name': 'report/file_name',
-        'is_in_vt': 'report/is_in_vt'
+        'is_in_vt': 'report/is_in_vt',
+        'sha256': 'report/sha256'
       })
     }
   }

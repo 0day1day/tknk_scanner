@@ -14,7 +14,8 @@
     data() {
       return {
         status: null,
-        is_success: false
+        is_success: false,
+        paused: false
       }
     },
     mounted() {
@@ -29,11 +30,12 @@
           }
         }).catch(e => {
           console.error(`Fetching result error: ${e}`);
+          this.paused = true;
         });
       },
       next_tick() {
         this.fetch_result();
-        if (this.status === null || this.status !== 0) {
+        if ((this.status === null || this.status !== 0) && !this.paused) {
           setTimeout(this.next_tick, 9000);
         }
       },

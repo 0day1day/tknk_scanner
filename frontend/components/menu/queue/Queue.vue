@@ -13,6 +13,11 @@
     mounted() {
       this.next_tick();
     },
+    data() {
+      return {
+        paused: false
+      };
+    },
     computed: {
       label() {
         let current_length = this.jobs.current !== null ? 1 : 0;
@@ -23,10 +28,12 @@
     methods: {
       next_tick() {
         this.fetch_jobs();
-        if(this.jobs.current !== null){
-          setTimeout(this.next_tick, 5000);
-        } else {
-          setTimeout(this.next_tick, 10000);
+        if(!this.paused) {
+          if (this.jobs.current !== null) {
+            setTimeout(this.next_tick, 5000);
+          } else {
+            setTimeout(this.next_tick, 10000);
+          }
         }
       },
       fetch_jobs() {
@@ -37,6 +44,7 @@
           }
         }).catch(e => {
           console.error(`Fetching jobs caused a error: ${e}`);
+          this.paused = true;
         });
       },
       ... mapMutations({

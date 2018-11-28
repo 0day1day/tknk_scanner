@@ -1,5 +1,10 @@
 <template>
   <b-table :items="fileSummary" class="summary-table" stacked fixed small>
+    <template slot="magic" slot-scope="magic">
+      <div class="magic">
+        {{ magic.value }}
+      </div>
+    </template>
     <template slot="MD5" slot-scope="md5">
       <hash :hash="md5.value" />
     </template>
@@ -27,4 +32,6 @@
 </script>
 
 <style lang="stylus" scoped>
+  .magic
+    word-break break-word
 </style>
