@@ -12,6 +12,12 @@ export const state = () => ({
 });
 
 export const getters = {
+  is_in_vt(state) {
+    return state.avclass === null ? false : state.avclass.flag;
+  },
+  file_name(state) {
+    return state.target_scan === null ? null : state.target_scan.file_name;
+  },
   detects_summary(state) {
     return [
       {

@@ -1,8 +1,9 @@
 <template>
   <b-table :items="report.scans" v-if="report.scans.length !== 0" :fields="headers" class="dropped-file-table">
-    <template slot="detect_rule" slot-scope="data" class="detect-rules">
+    <template slot="detect_rules" slot-scope="data" class="detect-rules">
       <div class="badges">
-        <b-badge variant="danger" v-for="(l, k) in data.value" :key="k" class="detect-label" v-if="data.value.length !== 0">{{ l }}</b-badge>
+        <yara variant="danger" v-for="(l, k) in data.item.detect_rule" :key="k" :yara="l" v-if="data.item.detect_rule.length !== 0"/>
+        <b-badge variant="secondary" v-if="data.item.detect_rule.length === 0">No rule detects</b-badge>
       </div>
     </template>
   </b-table>
@@ -13,9 +14,13 @@
 
 <script>
   import { mapState } from 'vuex'
+  import Yara from '~/components/Yara'
 
   export default {
     name: "Files",
+    components: {
+      Yara
+    },
     computed: {
       headers() {
         return [

@@ -1,36 +1,36 @@
 <template>
-<page>
-  <Message class="progress-message" v-if="is_processing">
-    <i class="fas fa-spinner fa-spin fa-10x"></i>
-    <p>Now analyzing ...</p>
-  </Message>
-  <div v-if="!is_processing">
-    <b-container fluid>
-      <b-row>
-        <b-col>
-          <h1>Result</h1>
-        </b-col>
-      </b-row>
-      <scan-summary />
-      <b-row>
-        <b-col>
-          <h2>Submit File</h2>
-        </b-col>
-      </b-row>
-      <file-summary />
-      <b-row>
-        <b-col>
-          <h2>Dropped Files</h2>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <files />
-        </b-col>
-      </b-row>
-    </b-container>
-  </div>
-</page>
+  <page>
+    <Message class="progress-message" v-if="is_processing">
+      <i class="fas fa-spinner fa-spin fa-10x"></i>
+      <p>Now analyzing ...</p>
+    </Message>
+    <div v-if="!is_processing">
+      <b-container fluid>
+        <b-row class="row">
+          <b-col>
+            <h1>Result</h1>
+          </b-col>
+        </b-row>
+        <scan-summary />
+        <b-row class="row">
+          <b-col>
+            <h2>Submit File</h2>
+          </b-col>
+        </b-row>
+        <file-summary />
+        <b-row class="row">
+          <b-col>
+            <h2>Dump Files</h2>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+            <files />
+          </b-col>
+        </b-row>
+      </b-container>
+    </div>
+  </page>
 </template>
 
 <script>
@@ -95,6 +95,8 @@
     text-align center
     i
       color #00ff00
+  .row
+    margin-top 1em
 </style>
 
 <style lang="stylus">
