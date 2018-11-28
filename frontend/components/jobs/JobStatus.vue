@@ -14,7 +14,8 @@
     data() {
       return {
         status: null,
-        is_success: false
+        is_success: false,
+        paused: false
       }
     },
     mounted() {
@@ -29,11 +30,12 @@
           }
         }).catch(e => {
           console.error(`Fetching result error: ${e}`);
+          this.paused = true;
         });
       },
       next_tick() {
         this.fetch_result();
-        if (this.status === null || this.status !== 0) {
+        if ((this.status === null || this.status !== 0) && !this.paused) {
           setTimeout(this.next_tick, 9000);
         }
       },
@@ -52,7 +54,7 @@
           return templates.concat(["fa-times-circle", "fail"]);
         } else {
           // not implemented state
-          return templates.concat(["fa-question-circle"]);
+          return templates.concat(["fa-question-circle", "unknown"]);
         }
       }
     }
@@ -60,7 +62,9 @@
 </script>
 
 <style lang="stylus" scoped>
-  i
+  .success
+  .fail
+  .unknown
     padding-right 1em
   .success
     color #00ff00
