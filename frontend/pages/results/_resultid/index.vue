@@ -12,6 +12,11 @@
         </b-col>
       </b-row>
       <scan-summary />
+      <b-row>
+        <b-col>
+          <h2>Submit File</h2>
+        </b-col>
+      </b-row>
       <file-summary />
       <b-row>
         <b-col>

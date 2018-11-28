@@ -2,7 +2,10 @@
   <div>
     <b-badge variant="danger" @click="show_detail">{{ yara }}</b-badge>
     <b-modal ref="ruleDetail" class="detail" hide-footer :title="yara">
-      <pre class="d-block">{{ rule }}</pre>
+      <pre class="d-block rule" v-if="rule !== null">{{ rule }}</pre>
+      <div class="b-block text-center" v-else>
+        <i class="fas fa-spinner fa-spin fa-5x"></i>
+      </div>
       <b-btn class="mt-3" variant="outline-danger" block @click="hide_detail">Close</b-btn>
     </b-modal>
   </div>
@@ -44,4 +47,7 @@
     margin 0 0.5em 0 0
   .detail
     color black
+  .rule
+    max-height 40vh
+    font-size 10px
 </style>
