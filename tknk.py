@@ -84,7 +84,8 @@ def get_yara_file(rule_name=None):
     if rule_name_check.isalnum() == False:
         return make_response(jsonify(status_code=2, message="Invalid rule_name"), 400)
  
-    cmd=[("find yara/ -type f | xargs -I {} grep {} -l -x -E -e " + "\"rule "+ rule_name +" .*{\" -e \"rule "+ rule_name +"{\" -e \"rule " + rule_name + "\"")]
+    #cmd=[("find yara/ -type f | xargs -I {} grep {} -l -x -E -e " + "\"rule "+ rule_name +" .*{\" -e \"rule "+ rule_name +"{\" -e \"rule " + rule_name + "\"")]
+    cmd=[("find yara/ -type f | xargs grep -l -E -e " + "\"rule "+ rule_name +" .*{\" -e \"rule "+ rule_name +"{\" -e \"rule " + rule_name + "\"")]
     p=subprocess.run(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, close_fds=True)
     output = p.stdout.decode('utf-8')
 
