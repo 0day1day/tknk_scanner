@@ -1,8 +1,10 @@
 <template>
   <div id="hash">
-    <i :class="icon" ref="copyIcon" @click="copy"></i>
-    {{ hash }}
-    <b-tooltip :show.sync="does_show_tooltip" triggers="click" :target="() => $refs.copyIcon" placement="bottom">{{ message }}</b-tooltip>
+    <div>
+      <i :class="icon" ref="copyIcon" @click="copy"></i>
+      <b-tooltip :show.sync="does_show_tooltip" triggers="click" :target="() => $refs.copyIcon" placement="bottom">{{ message }}</b-tooltip>
+    </div>
+    <div>{{ hash }}</div>
   </div>
 </template>
 
@@ -53,6 +55,7 @@
 
 <style lang="stylus" scoped>
   #hash
+    display flex
     word-break break-all
     i
       padding-right 0.25em

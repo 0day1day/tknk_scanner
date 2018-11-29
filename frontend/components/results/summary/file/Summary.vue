@@ -6,7 +6,7 @@
         <h3 class="file_name">
           {{ file_name }}
         </h3>
-        <b-badge :variant="is_in_vt ? 'info' : 'warning'" :href="is_in_vt ? 'https://www.virustotal.com/#/file/' + sha256 : null" target="_blank">
+        <b-badge :variant="is_in_vt ? 'primary' : 'warning'" :href="is_in_vt ? 'https://www.virustotal.com/#/file/' + sha256 : null" target="_blank">
           VirusTotal
           <b-badge variant="light" class="num">
             {{ is_in_vt ? "Found" : "Not Found" }}

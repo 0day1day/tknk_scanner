@@ -1,17 +1,17 @@
 <template>
-  <b-table :items="fileSummary" class="summary-table" stacked fixed small>
+  <b-table :items="fileSummary" :fields="fields" class="summary-table" stacked fixed small>
     <template slot="magic" slot-scope="magic">
       <div class="magic">
         {{ magic.value }}
       </div>
     </template>
-    <template slot="MD5" slot-scope="md5">
+    <template slot="md5" slot-scope="md5">
       <hash :hash="md5.value" />
     </template>
-    <template slot="SHA1" slot-scope="sha1">
+    <template slot="sha1" slot-scope="sha1">
       <hash :hash="sha1.value" />
     </template>
-    <template slot="SHA256" slot-scope="sha256">
+    <template slot="sha256" slot-scope="sha256">
       <hash :hash="sha256.value" />
     </template>
   </b-table>
@@ -27,6 +27,18 @@
     ],
     components: {
       Hash
+    },
+    computed: {
+      fields() {
+        return [
+          { key: 'file_name', label: 'File Name' },
+          { key: 'size', label: 'Size'},
+          { key: 'magic', label: 'Magic' },
+          { key: 'md5', label: 'MD5' },
+          { key: 'sha1', label: 'SHA-1' },
+          { key: 'sha256', label: 'SHA-256' }
+        ]
+      }
     }
   }
 </script>
