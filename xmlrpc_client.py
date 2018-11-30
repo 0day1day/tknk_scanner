@@ -54,6 +54,14 @@ def current_job_init(r):
 
     return
 
+def size_fmt(num, suffix='B'):
+        for unit in ['','K','M','G','T','P','E','Z']:
+            if abs(num) < 1000.0:
+                return "%3.1f%s%s" % (num, unit, suffix)
+            num /= 1000.0
+        return "%.1f%s%s" % (num, 'Yi', suffix)
+
+
 def analyze(uid):
 
     #db connect
@@ -85,10 +93,11 @@ def analyze(uid):
               "virus_total":0
              }
  
-    f = open(config['path'],'rb').read()
-    file_md5 = str(hashlib.md5(f).hexdigest())
-    file_sha1 = str(hashlib.sha1(f).hexdigest())
-    file_sha256 = str(hashlib.sha256(f).hexdigest())
+    with open(config['path'],'rb')as f:
+        d = f.read()
+        file_md5 = str(hashlib.md5(d).hexdigest())
+        file_sha1 = str(hashlib.sha1(d).hexdigest())
+        file_sha256 = str(hashlib.sha256(d).hexdigest())
 
     #avclass
     if tknk_conf['virus_total'] == 1:
@@ -106,7 +115,7 @@ def analyze(uid):
     rules = yara.compile('index.yar')
     matches = rules.match(config['path'])
 
-    result['target_scan']=({"md5":file_md5, "sha1":file_sha1, "sha256":file_sha256, "detect_rule":list(map(str,matches)), "file_name":config['target_file']})
+    result['target_scan']=({"md5":file_md5, "sha1":file_sha1, "sha256":file_sha256, "detect_rule":list(map(str,matches)), "file_name":config['target_file'], "size":size_fmt(os.path.getsize(config['path']))})
 
     cmd=['virsh', 'snapshot-revert', VM_NAME, '--current']
     p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -205,15 +214,10 @@ def analyze(uid):
         p = Path("result/dump/")
 
         for f in p.glob("**/*"):
-            print(f.suffix)
-            print(f.resolve())
-            print(f.name)
             if (".exe" == f.suffix) or (".dll" == f.suffix) or (".dmp" == f.suffix):
-                #md5_hash = str(hashlib.md5(open(str(f.resolve()),'rb').read()).hexdigest())
-                #sha1_hash = str(hashlib.sha1(open(str(f.resolve()),'rb').read()).hexdigest())
-                #sha256_hash = str(hashlib.sha256(open(str(f.resolve()),'rb').read()).hexdigest())
+                size = os.path.getsize(str(f))
                 matches = rules.match(str(f.resolve()))
-                result['scans'].append({"detect_rule":list(map(str,matches)), "file_name":f.name})
+                result['scans'].append({"detect_rule":list(map(str,matches)), "file_name":f.name, "size":size_fmt(size)})
 
     for scan in result["scans"]:
         if scan["detect_rule"] != []:

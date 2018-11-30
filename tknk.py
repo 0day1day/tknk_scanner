@@ -31,7 +31,7 @@ def start_analyze():
         return abort(404)
 
     uid = str(uuid.uuid4())
-    post = {"UUID":uid}
+    post = {"UUID":uid, "avclass":{"data":[],"flag":None},"die":[],"magic":None,"mode":None,"result":{"detail":None,"is_success":None},"run_time":None,"scans":[], "target_scan":{"file_name":None, "detect_rule":[], "md5":None,"sha1":None,"sha256":None, "size":None}, "timestamp":None, "virus_total":None}
 
     collection.insert_one(post)
 
@@ -72,10 +72,10 @@ def show_result(uuid=None):
 
     report.pop('_id')
     
-    if "scans" in report:
+    if  report['result']['is_success'] is not None:
         return jsonify(status_code=0, report=report)
     else:
-        return make_response(jsonify(status_code=1, message='Analysing.'), 206)
+        return make_response(jsonify(status_code=1, message='Analysing...'), 206)
         
 @app.route('/yara/<rule_name>')
 def get_yara_file(rule_name=None):
