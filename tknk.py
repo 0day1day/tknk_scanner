@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from rq import Queue
-import json, subprocess, requests, time, shutil, magic, os, uuid, math, redis, datetime
+import json, subprocess, requests, time, shutil, magic, os, uuid, math, redis, datetime, plyara, re, sys
 from pathlib import Path
 from pymongo import MongoClient
 from flask import Flask, jsonify, request, url_for, abort, Response, make_response, send_file, abort
@@ -80,18 +80,17 @@ def show_result(uuid=None):
 @app.route('/yara/<rule_name>')
 def get_yara_file(rule_name=None):
 
+    pool =  redis.ConnectionPool(host='localhost', port=6379, db=0)
+    r = redis.StrictRedis(connection_pool=pool)
+
     rule_name_check = rule_name.replace("_", "")
     if rule_name_check.isalnum() == False:
         return make_response(jsonify(status_code=2, message="Invalid rule_name"), 400)
- 
-    cmd=[("find yara/ -type f | xargs grep -x -l -E -e " + "\"rule "+ rule_name +" .*{\" -e " + "\"rule "+ rule_name +" .*{.*\" -e \"rule "+ rule_name +"{\" -e \"rule " + rule_name + "\" -e \"rule " + rule_name +"\" -e " + "\"rule "+ rule_name +" :.*\"")]
-    p=subprocess.run(cmd, shell=True, stdin=None, stdout=subprocess.PIPE, close_fds=True)
-    output = p.stdout.decode('utf-8')
 
-    print(output)
+    db = json.loads(r.get("yara_db").decode('utf-8').replace("\'", "\""))    
 
     try:
-        with open(output.strip(), 'r') as f:
+        with open(db[rule_name], 'r') as f:
             yara_file=f.read()
     except:
          return make_response(jsonify(status_code=2, message="File not found"), 404)
@@ -176,6 +175,29 @@ if __name__ == '__main__':
     pool =  redis.ConnectionPool(host='localhost', port=6379, db=0)
     r = redis.StrictRedis(connection_pool=pool)
     r.set('current_job_id', None)
+   
+    with open("index.yar", 'r') as f:
+        index = f.readlines()
+
+    parser = plyara.Plyara()
+    yara_db={}
+    re_search = re.compile('(%s.*%s)' % ('\"', '\"'))
+    l = len(index)
+
+    for i in range(l):
+        sys.stdout.write("\r[*] Loading yara rules %d/%d" % (i+1,l))
+        sys.stdout.flush()
+        m = re_search.search(index[i])
+        path = m.group(0).strip('\"')
+
+        rules_list = parser.parse_string(open(path).read())
+
+        for rule in rules_list:
+            yara_db.update({rule['rule_name']:path})
+
+    
+    r.set('yara_db', yara_db)
+    print()
 
     # Tell RQ what Redis connection to use
     redis_conn = Redis(host='localhost', port=6379)
