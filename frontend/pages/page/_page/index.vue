@@ -10,6 +10,7 @@
         <b-col>
           <reports-summary :items="scope_results" />
           <b-pagination align="center" :total-rows="max_pages * 50" v-model="current_page" :per-page="50"></b-pagination>
+          {{ current_page }}
         </b-col>
       </b-row>
     </b-container>
@@ -41,15 +42,16 @@
         console.error(`Page fetching error: ${e}`);
         this.$root.error(e);
       });
-      this.current_page = this.$route.params.page;
+      this.current_page = parseInt(this.$route.params.page, 10);
       this.max_pages = data.page_size;
       this.scope_results = data.page;
     },
-    watch: {
-      cuurent_page() {
-        this.$router
-      }
-    }
+    // watch: {
+    //   'data.cuurent_page': function(next, current) {
+    //       console.log("palloc")
+    //       this.$router.push({ name: 'page-page', params: { page: next}});
+    //   }
+    // }
   }
 </script>
 

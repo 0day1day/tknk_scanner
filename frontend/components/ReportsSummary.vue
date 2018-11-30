@@ -1,5 +1,8 @@
 <template>
   <b-table :items="reports_summary" :fields="fields">
+    <template slot="file_name" slot-scope="data">
+      <div class="filename"> {{ data.value }}</div>
+    </template>
     <template slot="detect_rules" slot-scope="data">
       <yara v-for="(rule, key) in data.value" :key="key" :yara="rule" />
     </template>
@@ -7,7 +10,7 @@
       <b-badge :variant="data.value ? 'primary' : 'warning'">{{ data.value ? 'Found' : 'Not Found'}}</b-badge>
     </template>
     <template slot="uuid" slot-scope="data">
-      <nuxt-link :to="{ name: 'results-resultid', params: { resultid: data.value}}">Results</nuxt-link>
+      <nuxt-link :to="{ name: 'results-resultid', params: { resultid: data.value }}">Results</nuxt-link>
     </template>
   </b-table>
 </template>
@@ -29,6 +32,7 @@
           { key: 'file_name', label: 'FileName' },
           { key: 'size', label: 'Size' },
           { key: 'mode', label: 'Mode' },
+          { key: 'run_time', label: 'Run Time' },
           { key: 'detect_rules', label: 'Detect Rules' },
           { key: 'is_in_vt', label: 'VirusTotal'},
           { key: 'timestamp', label: 'Timestamp' },
@@ -37,13 +41,12 @@
       },
       reports_summary() {
         return this.items.map(report => {
-          let detect_rules = null;
+          let detect_rules = [];
+
           if(report.scans !== null && report.scans !== undefined && report.scans.length !== 0) {
-            detect_rules = report.scans.reduce((a,b) => {
-              return a.detect_rule.concat(b.detect_rule);
+            report.scans.forEach(scan => {
+              detect_rules = detect_rules.concat(scan.detect_rule);
             });
-          } else {
-            detect_rules = [];
           }
 
           if(report.target_scan !== null && report.target_scan !== undefined && report.target_scan.detect_rule.length !== 0){
@@ -53,6 +56,7 @@
           return {
             file_name: report.target_scan === undefined || report.target_scan === null ? null : report.target_scan.file_name,
             mode: report.mode,
+            run_time: report.run_time === null || report.run_time === undefined ? null : parseInt(report.run_time, 10),
             detect_rules: detect_rules,
             size: report.target_scan === undefined || report.target_scan === null? null : report.target_scan.size,
             is_in_vt: report.avclass === undefined || report.avclass === null ? false : report.avclass.flag,
@@ -65,6 +69,7 @@
   }
 </script>
 
-<style scoped>
-
+<style lang="stylus" scoped>
+  .filename
+    word-break break-all
 </style>
