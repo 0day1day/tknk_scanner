@@ -101,8 +101,8 @@ def get_yara_file(rule_name=None):
 def page(page_num=None):
     page=[]
     page_num = int(page_num)
-    page_size= math.floor(len(list(collection.find()))/50)+1
-    page_item = collection.find().sort('timestamp',-1).limit(50).skip((page_num-1)*50)
+    page_size= math.floor(len(list(collection.find()))/1)+1
+    page_item = collection.find().sort('timestamp',-1).limit(1).skip((page_num-1)*1)
     for p in page_item:
         p.pop('_id')
         page.append(p)
