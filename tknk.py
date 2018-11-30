@@ -101,8 +101,9 @@ def get_yara_file(rule_name=None):
 def page(page_num=None):
     page=[]
     page_num = int(page_num)
-    page_size= math.floor(len(list(collection.find()))/1)+1
-    page_item = collection.find().sort('timestamp',-1).limit(1).skip((page_num-1)*1)
+    line_num = 2.0
+    page_size= math.ceil(len(list(collection.find()))/line_num)
+    page_item = collection.find().sort('timestamp',-1).limit(int(line_num)).skip((page_num-1)*int(line_num))
     for p in page_item:
         p.pop('_id')
         page.append(p)
@@ -183,6 +184,7 @@ if __name__ == '__main__':
     yara_db={}
     re_search = re.compile('(%s.*%s)' % ('\"', '\"'))
     l = len(index)
+    priv = []
 
     for i in range(l):
         sys.stdout.write("\r[*] Loading yara rules %d/%d" % (i+1,l))
@@ -192,9 +194,10 @@ if __name__ == '__main__':
 
         rules_list = parser.parse_string(open(path).read())
 
-        for rule in rules_list:
+        for rule in rules_list[len(priv)-1:]:
             yara_db.update({rule['rule_name']:path})
 
+        priv = rules_list
     
     r.set('yara_db', yara_db)
     print()
