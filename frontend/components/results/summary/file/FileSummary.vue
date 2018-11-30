@@ -1,5 +1,10 @@
 <template>
   <b-table :items="fileSummary" :fields="fields" class="summary-table" stacked fixed small>
+    <template slot="file_name" slot-scope="file_name">
+      <div class="filename">
+        {{ file_name.value }}
+      </div>
+    </template>
     <template slot="magic" slot-scope="magic">
       <div class="magic">
         {{ magic.value }}
@@ -45,5 +50,6 @@
 
 <style lang="stylus" scoped>
   .magic
+  .filename
     word-break break-word
 </style>

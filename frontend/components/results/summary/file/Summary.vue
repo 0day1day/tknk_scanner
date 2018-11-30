@@ -52,6 +52,7 @@
   .file_name
     font-size 1.12em
     margin-top 0.5em
+    word-break break-all
   .num
     margin-left 0.25em
 </style>

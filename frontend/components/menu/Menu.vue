@@ -10,6 +10,9 @@
       <b-navbar-nav>
         <b-nav-item :to="{'name': 'index'}">Scan</b-nav-item>
       </b-navbar-nav>
+      <b-navbar-nav>
+        <b-nav-item :to="{'name': 'page-page', params: { page: 1 } }">Recent</b-nav-item>
+      </b-navbar-nav>
 
     </b-collapse>
     <b-navbar-nav class="ml-auto">
