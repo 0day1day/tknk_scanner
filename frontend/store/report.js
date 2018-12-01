@@ -46,20 +46,22 @@ export const getters = {
       return [
         {
           file_name: null,
+          size: null,
           magic: null,
-          "MD5": null,
-          "SHA1": null,
-          "SHA256": null,
+          md5: null,
+          sha1: null,
+          sha256: null,
         }
       ]
     } else {
       return [
         {
-          file_name: state.target_scan === null ? null : state.target_scan.file_name,
+          file_name: state.target_scan.file_name,
+          size: state.target_scan.size,
           magic: state.magic,
-          "MD5": state.target_scan.md5,
-          "SHA1": state.target_scan.sha1,
-          "SHA256": state.target_scan.sha256,
+          md5: state.target_scan.md5,
+          sha1: state.target_scan.sha1,
+          sha256: state.target_scan.sha256,
         }
       ]
     }

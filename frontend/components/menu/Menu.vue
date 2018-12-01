@@ -8,29 +8,34 @@
     <b-collapse is-nav id="nav_collapse">
 
       <b-navbar-nav>
-        <b-nav-item :to="{'name': 'index'}">Scan</b-nav-item>
+        <b-nav-item :to="{'name': 'index'}" :active="$route.name === 'index'"><i class="fas fa-search"></i> Scan</b-nav-item>
+        <b-nav-item :to="{'name': 'page-page', params: { page: 1 } }" :active="$route.name === 'page-page'"><i class="fas fa-clock"></i> Recent</b-nav-item>
       </b-navbar-nav>
 
+      <b-navbar-nav class="ml-auto">
+        <search />
+        <queue right />
+      </b-navbar-nav>
     </b-collapse>
-    <b-navbar-nav class="ml-auto">
-      <queue right />
-    </b-navbar-nav>
   </b-navbar>
 </template>
 
 <script>
-  import Queue from '~/components/menu/queue/Queue.vue'
+  import Queue from '~/components/menu/queue/Queue'
+  import Search from '~/components/menu/Search'
 
   export default {
     name: "Menu",
     components: {
-      Queue
+      Queue,
+      Search
     }
   }
 </script>
 
 <style lang="stylus" scoped>
   .navbar
+    position fixed
     height 60px
     min-width 100%
     background-color #2c2c2c

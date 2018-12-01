@@ -1,9 +1,9 @@
 <template>
   <b-row>
-    <b-col sm="4" class="status">
+    <b-col sm="2" class="status">
       <status :status="report.result.is_success" />
     </b-col>
-    <b-col sm="8">
+    <b-col sm="8" offset-sm="2">
       <scan-summary :scan-summary="scan_summary" />
     </b-col>
   </b-row>

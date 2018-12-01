@@ -10,7 +10,7 @@
       </div>
     </template>
     <template slot="AVClass" slot-scope="avclass">
-      <b-badge variant="danger" v-for="(cls, key) in avclass.item.AVClass.data" :key="key" class="avclass" v-if="avclass.item.AVClass.data.length !== 0">
+      <b-badge variant="primary" v-for="(cls, key) in avclass.item.AVClass.data" :key="key" class="avclass" v-if="avclass.item.AVClass.data.length !== 0">
         {{ cls.family_name }}
         <b-badge variant="light" class="num">
           {{ cls.count }}
