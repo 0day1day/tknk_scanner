@@ -9,8 +9,11 @@
       <b-row>
         <b-col>
           <reports-summary :items="scope_results" />
-          <b-pagination align="center" :total-rows="max_pages * 50" v-model="current_page" :per-page="50"></b-pagination>
-          {{ current_page }}
+          <b-pagination
+            align="center"
+            :total-rows="max_pages * 50"
+            v-model="current_page"
+            :per-page="50"></b-pagination>
         </b-col>
       </b-row>
     </b-container>
@@ -46,12 +49,13 @@
       this.max_pages = data.page_size;
       this.scope_results = data.page;
     },
-    // watch: {
-    //   'data.cuurent_page': function(next, current) {
-    //       console.log("palloc")
-    //       this.$router.push({ name: 'page-page', params: { page: next}});
-    //   }
-    // }
+    watch: {
+      'current_page': function(next, current) {
+        if(current !== 0){
+          this.$router.push({ name: 'page-page', params: { page: next}});
+        }
+      }
+    }
   }
 </script>
 
