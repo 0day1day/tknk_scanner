@@ -29,6 +29,10 @@
             label: 'File Name'
           },
           {
+            key: 'size',
+            label: 'Size'
+          },
+          {
             key: 'detect_rules',
             label: 'Detect Rule'
           },

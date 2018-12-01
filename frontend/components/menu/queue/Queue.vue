@@ -1,7 +1,9 @@
 <template>
   <div>
     <b-navbar-nav>
-      <b-nav-item :to="{ name: 'jobs' }">{{ label }}</b-nav-item>
+      <b-nav-item :to="{ name: 'jobs' }" :active="current_length !== 0 || jobs.queued.length !== 0">
+        Processing: <span :class="current_class">{{current_length}}</span> / Queued: <span :class="queued_class">{{jobs.queued.length}}</span>
+      </b-nav-item>
     </b-navbar-nav>
   </div>
 </template>
@@ -19,9 +21,15 @@
       };
     },
     computed: {
-      label() {
-        let current_length = this.jobs.current !== null ? 1 : 0;
-        return `Processing: ${current_length} / Queued: ${this.jobs.queued.length}`;
+      current_length() {
+        console.log(this.$route);
+        return this.jobs.current !== null ? 1 : 0;
+      },
+      current_class() {
+        return this.current_length === 0 ? null : ['working'];
+      },
+      queued_class() {
+        return this.jobs.queued.length === 0 ? null : ['working'];
       },
       ... mapState([ 'jobs' ])
     },
@@ -55,6 +63,7 @@
   }
 </script>
 
-<style scoped>
-
+<style lang="stylus" scoped>
+  .working
+    color #0f0
 </style>
