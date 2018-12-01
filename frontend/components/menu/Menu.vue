@@ -12,20 +12,23 @@
         <b-nav-item :to="{'name': 'page-page', params: { page: 1 } }">Recent</b-nav-item>
       </b-navbar-nav>
 
+      <b-navbar-nav class="ml-auto">
+        <search />
+        <queue right />
+      </b-navbar-nav>
     </b-collapse>
-    <b-navbar-nav class="ml-auto">
-      <queue right />
-    </b-navbar-nav>
   </b-navbar>
 </template>
 
 <script>
-  import Queue from '~/components/menu/queue/Queue.vue'
+  import Queue from '~/components/menu/queue/Queue'
+  import Search from '~/components/menu/Search'
 
   export default {
     name: "Menu",
     components: {
-      Queue
+      Queue,
+      Search
     }
   }
 </script>

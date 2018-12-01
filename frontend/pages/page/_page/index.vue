@@ -22,7 +22,7 @@
   import ReportsSummary from '~/components/ReportsSummary'
 
   export default {
-    name: "index",
+    name: "page-index",
     components: {
       ReportsSummary
     },
