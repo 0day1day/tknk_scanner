@@ -17,9 +17,9 @@
         <b-form-input id="timeInput" type="number" v-model="form.time" placeholder="seconds" required />
       </b-form-group>
       <b-button type="submit" :variant="get_variant" v-bind:disabled="!can_upload">
-       <template v-if="is_uploading">
-         Uploading...
-       </template>
+        <template v-if="is_uploading">
+          Uploading...
+        </template>
         <template v-else>
           Upload
         </template>
