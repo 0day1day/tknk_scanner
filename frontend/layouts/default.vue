@@ -30,7 +30,7 @@ body
   #app-view
     height 100vh
   .menu
-    z-index 39
+    z-index 3939
   .page
     z-index 3
 </style>
