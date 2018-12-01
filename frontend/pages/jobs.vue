@@ -1,37 +1,33 @@
 <template>
-  <page>
-    <b-container fluid>
-      <b-row class="tasks">
-        <b-col>
-          <h1>Current</h1>
-          <list :jobs="current" />
-        </b-col>
-      </b-row>
-      <b-row class="tasks">
-        <b-col>
-          <h1>Queued</h1>
-          <list :jobs="jobs.queued" />
-        </b-col>
-      </b-row>
-      <b-row class="tasks">
-        <b-col>
-          <h1>Finished</h1>
-          <list :jobs="jobs.finished" />
-        </b-col>
-      </b-row>
-    </b-container>
-  </page>
+  <b-container fluid>
+    <b-row class="tasks">
+      <b-col>
+        <h1>Current</h1>
+        <list :jobs="current" />
+      </b-col>
+    </b-row>
+    <b-row class="tasks">
+      <b-col>
+        <h1>Queued</h1>
+        <list :jobs="jobs.queued" />
+      </b-col>
+    </b-row>
+    <b-row class="tasks">
+      <b-col>
+        <h1>Finished</h1>
+        <list :jobs="jobs.finished" />
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
   import List from '~/components/jobs/List'
-  import Page from '~/components/ui/Page'
   import { mapState } from 'vuex'
 
   export default {
     name: "jobs",
     components: {
-      Page,
       List
     },
     computed: {

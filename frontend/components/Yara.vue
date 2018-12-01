@@ -1,7 +1,10 @@
 <template>
   <div>
     <b-badge variant="danger" @click="show_detail">{{ yara }}</b-badge>
-    <b-modal ref="ruleDetail" class="detail" hide-footer :title="yara">
+    <b-modal ref="ruleDetail" class="detail" size="lg" hide-footer :title="yara">
+      <template slot="modal-title" slot-scope="data">
+        <span class="title">{{ data.value }}</span>
+      </template>
       <pre class="d-block rule" v-if="rule !== null">{{ rule }}</pre>
       <div class="b-block text-center" v-else>
         <i class="fas fa-spinner fa-spin fa-5x"></i>
@@ -45,6 +48,8 @@
 <style lang="stylus" scoped>
   span
     margin 0 0.5em 0 0
+  .title
+    word-break break-all
   .detail
     color black
   .rule

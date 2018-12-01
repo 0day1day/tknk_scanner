@@ -1,16 +1,20 @@
 <template>
   <div id="app-view">
-    <Menu/>
-    <nuxt/>
+    <Menu class="menu" />
+    <page class="page" >
+      <nuxt/>
+    </page>
   </div>
 </template>
 
 <script>
+  import Page from '~/components/ui/Page'
   import Menu from '~/components/menu/Menu.vue'
 
   export default {
     components: {
-      Menu
+      Menu,
+      Page
     }
   }
 </script>
@@ -25,4 +29,8 @@ body
 <style lang="stylus" scoped>
   #app-view
     height 100vh
+  .menu
+    z-index 39
+  .page
+    z-index 3
 </style>
