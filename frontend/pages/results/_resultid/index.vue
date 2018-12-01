@@ -1,5 +1,5 @@
 <template>
-  <page>
+  <div>
     <Message class="progress-message" v-if="is_processing">
       <i class="fas fa-spinner fa-spin fa-10x"></i>
       <p>Now analyzing ...</p>
@@ -30,11 +30,10 @@
         </b-row>
       </b-container>
     </div>
-  </page>
+  </div>
 </template>
 
 <script>
-  import Page from '~/components/ui/Page'
   import Message from '~/components/ui/Message'
   import ScanSummary from '~/components/results/summary/scan/Summary'
   import FileSummary from '~/components/results/summary/file/Summary'
@@ -46,7 +45,6 @@
     components: {
       ScanSummary,
       FileSummary,
-      Page,
       Message,
       Files,
     },

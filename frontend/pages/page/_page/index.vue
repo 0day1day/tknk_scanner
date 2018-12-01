@@ -1,33 +1,29 @@
 <template>
-  <page>
-    <b-container fluid>
-      <b-row>
-        <b-col>
-          <h1>Recent</h1>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <reports-summary :items="scope_results" />
-          <b-pagination
-            align="center"
-            :total-rows="max_pages * 50"
-            v-model="current_page"
-            :per-page="50"></b-pagination>
-        </b-col>
-      </b-row>
-    </b-container>
-  </page>
+  <b-container fluid>
+    <b-row>
+      <b-col>
+        <h1>Recent</h1>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col>
+        <reports-summary :items="scope_results" />
+        <b-pagination
+          align="center"
+          :total-rows="max_pages * 50"
+          v-model="current_page"
+          :per-page="50"></b-pagination>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
-  import Page from '~/components/ui/Page'
   import ReportsSummary from '~/components/ReportsSummary'
 
   export default {
     name: "index",
     components: {
-      Page,
       ReportsSummary
     },
     validate({ params }) {

@@ -9,8 +9,6 @@
 
       <b-navbar-nav>
         <b-nav-item :to="{'name': 'index'}">Scan</b-nav-item>
-      </b-navbar-nav>
-      <b-navbar-nav>
         <b-nav-item :to="{'name': 'page-page', params: { page: 1 } }">Recent</b-nav-item>
       </b-navbar-nav>
 
@@ -34,6 +32,7 @@
 
 <style lang="stylus" scoped>
   .navbar
+    position fixed
     height 60px
     min-width 100%
     background-color #2c2c2c
