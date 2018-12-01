@@ -22,7 +22,6 @@
     },
     computed: {
       current_length() {
-        console.log(this.$route);
         return this.jobs.current !== null ? 1 : 0;
       },
       current_class() {
