@@ -53,6 +53,9 @@
             detect_rules = detect_rules.concat(report.target_scan.detect_rule);
           }
 
+          // remove duplicates
+          detect_rules = Array.from(new Set(detect_rules));
+
           return {
             file_name: report.target_scan === undefined || report.target_scan === null ? null : report.target_scan.file_name,
             mode: report.mode,
