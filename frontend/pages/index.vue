@@ -9,11 +9,19 @@
           <upload-form />
         </div>
       </div>
-      <div class="foot">
+      <div class="github">
         <div class="foot-wrapper">
           <a href="https://github.com/nao-sec/tknk_scanner">
             <i class="fab fa-github fa-3x"></i>
             <p>Code on Github</p>
+          </a>
+        </div>
+      </div>
+      <div class="credit">
+        <div class="foot-wrapper">
+          <a href="https://github.com/nao-sec/tknk_scanner">
+            <i class="fas fa-copyright fa-3x"></i>
+            <p>Credits</p>
           </a>
         </div>
       </div>
@@ -44,8 +52,8 @@
     justify-content center
     .wrapper
       position relative
-      width 850px
-      height 850px
+      width 1000px
+      height 900px
       .title
         color #00ff00
         z-index 4
@@ -55,18 +63,19 @@
         align-items center
         position absolute
         top 0px
-        right 30px
+        right 0px
         width 350px
         height 350px
         border-radius 50%
       .form
         z-index 39
-        background-color #3f3f3f
+        background-color #444444
         position absolute
         display flex
         justify-content center
         align-items center
-        top 115px
+        left 120px
+        top 130px
         width 600px
         height 600px
         border-radius 50%
@@ -76,21 +85,38 @@
           align-items center
           width 400px
           height 400px
-      .foot
+      .github
         z-index 1
-        background-color #6e6e6e
+        background-color #393939
         position absolute
         display flex
         justify-content center
         align-items center
-        bottom 0px
-        left 300px
+        top 105px
         width 200px
         height 200px
         border-radius 50%
         .foot-wrapper
           text-align center
-          a
-            color #7fdfff
+      .credit
+        z-index 2
+        background-color #3f3f3f
+        position absolute
+        display flex
+        justify-content center
+        align-items center
+        bottom 80px
+        right 300px
+        width 150px
+        height 150px
+        border-radius 50%
+        .foot-wrapper
+          text-align center
+      .credit
+      .github
+        a
+          color #00ff00
+        p
+          margin-bottom 0
 </style>
 
