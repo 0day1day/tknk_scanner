@@ -93,6 +93,7 @@
         justify-content center
         align-items center
         top 105px
+        left 20px
         width 200px
         height 200px
         border-radius 50%
@@ -105,7 +106,7 @@
         display flex
         justify-content center
         align-items center
-        bottom 80px
+        bottom 90px
         right 300px
         width 150px
         height 150px
