@@ -19,10 +19,10 @@
       </div>
       <div class="credit">
         <div class="foot-wrapper">
-          <a href="https://github.com/nao-sec/tknk_scanner">
+          <nuxt-link :to="{ name: 'credits' }">
             <i class="fas fa-copyright fa-3x"></i>
             <p>Credits</p>
-          </a>
+          </nuxt-link>
         </div>
       </div>
     </div>
