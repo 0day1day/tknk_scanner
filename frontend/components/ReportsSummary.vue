@@ -10,7 +10,7 @@
       <b-badge :variant="data.value ? 'primary' : 'warning'">{{ data.value ? 'Found' : 'Not Found'}}</b-badge>
     </template>
     <template slot="uuid" slot-scope="data">
-      <nuxt-link :to="{ name: 'results-resultid', params: { resultid: data.value }}">Results</nuxt-link>
+      <nuxt-link :to="{ name: 'results-resultid', params: { resultid: data.value }}">Result</nuxt-link>
     </template>
   </b-table>
 </template>
@@ -36,7 +36,7 @@
           { key: 'detect_rules', label: 'Detect Rules' },
           { key: 'is_in_vt', label: 'VirusTotal'},
           { key: 'timestamp', label: 'Timestamp' },
-          { key: 'uuid', label: 'Result'},
+          { key: 'uuid', label: 'Results'},
         ]
       },
       reports_summary() {
@@ -52,6 +52,9 @@
           if(report.target_scan !== null && report.target_scan !== undefined && report.target_scan.detect_rule.length !== 0){
             detect_rules = detect_rules.concat(report.target_scan.detect_rule);
           }
+
+          // remove duplicates
+          detect_rules = Array.from(new Set(detect_rules));
 
           return {
             file_name: report.target_scan === undefined || report.target_scan === null ? null : report.target_scan.file_name,

@@ -8,8 +8,8 @@
     <b-collapse is-nav id="nav_collapse">
 
       <b-navbar-nav>
-        <b-nav-item :to="{'name': 'index'}" :active="$route.name === 'index'"><i class="fas fa-search"></i> Scan</b-nav-item>
-        <b-nav-item :to="{'name': 'page-page', params: { page: 1 } }" :active="$route.name === 'page-page'"><i class="fas fa-clock"></i> Recent</b-nav-item>
+        <b-nav-item :to="{'name': 'index'}" active><i class="fas fa-bug"></i> Scan</b-nav-item>
+        <b-nav-item :to="{'name': 'page-page', params: { page: 1 } }" active><i class="fas fa-clock"></i> Recent</b-nav-item>
       </b-navbar-nav>
 
       <b-navbar-nav class="ml-auto">

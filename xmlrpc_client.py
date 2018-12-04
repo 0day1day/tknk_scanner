@@ -90,7 +90,8 @@ def analyze(uid):
               "scans":[],
               "UUID":uid,
               "magic":magic.from_file(config['path']),
-              "virus_total":0
+              "virus_total":0,
+              "avclass":{"flag":None, "data":[]}
              }
  
     with open(config['path'],'rb')as f:
@@ -169,8 +170,7 @@ def analyze(uid):
     if ret == False:
         print("Connection error\n")
         is_success = False
-        result["result"]["detail"] = "Connection error"  
-        exit()
+        result["result"]["detail"] = "Connection error"
     else:
         ret = download() 
      
