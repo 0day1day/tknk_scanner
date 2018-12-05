@@ -25,10 +25,10 @@ The original code of a malware must be scanned using YARA rules after processing
 ## Installation
 
 ### Preparing the Host
-1. git clone *repository_url*
+1. git clone --recursive *repository_url*
 2. Run `setup/setup.sh`
 3. Install yara-python
-  ```
+ ```
 $ git clone --recursive https://github.com/VirusTotal/yara-python
 $ cd yara-python
 $ python3 setup.py build
@@ -37,9 +37,20 @@ $ sudo python3 setup.py install
 4. Edit tknk.conf
     * vm_name
     * vm_url
-5. Download Tools and copy to `tools/`
+5. Download Malware characterization tools
+ * avclass
+ ```
+ git submodule update
+ ```
+ * Detect It Easy
+   * Download zip from https://ntinfo.biz/  
+   * Extract zip to'tknk_scanner'
+   * Rename folder name 'die'
+6. Download and copy dump tools to `tools/`
     * [hollows_hunter](https://github.com/hasherezade/hollows_hunter)
-6. Set yara rules  
+    * [procdump](https://docs.microsoft.com/en-us/sysinternals/downloads/procdump)
+    * [scylla]}(https://github.com/NtQuery/Scylla)
+7. Set yara rules  
   Save yara rules in "rules" folder. You need to add the rule to index.yar.
 
 ### Preparing the Guest
@@ -89,7 +100,7 @@ The default is 120 seconds.
     * scylla  
         Using Scylla.
     * diff(procdump)  
-        Dump the newly created process while running with procdump.
+        Dump the newly created process while running with procdump.  
 
 ![tknk03](https://user-images.githubusercontent.com/18203311/49511433-7d10bb00-f8ce-11e8-88dd-d81fe5f24e93.png)
 ![tknk04](https://user-images.githubusercontent.com/18203311/49511682-28217480-f8cf-11e8-8481-d6cd93ca3070.png)
