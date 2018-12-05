@@ -51,5 +51,5 @@
 <style lang="stylus" scoped>
   .magic
   .filename
-    word-break break-word
+    word-break break-all
 </style>
