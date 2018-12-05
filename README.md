@@ -26,7 +26,7 @@ The original code of a malware must be scanned using YARA rules after processing
 
 ### Preparing the Host
 1. git clone --recursive *repository_url*
-2. Run `setup/setup.sh`
+2. `sudo setup/setup.sh`
 3. Install yara-python
  ```
 $ git clone --recursive https://github.com/VirusTotal/yara-python
