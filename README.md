@@ -86,13 +86,14 @@ The default is 120 seconds.
         Using [hollows_hunter](https://github.com/hasherezade/hollows_hunter).
     * prodump  
         Using procdump.
-    * scylla
+    * scylla  
         Using Scylla.
     * diff(procdump)  
         Dump the newly created process while running with procdump.
 
 ![tknk03](https://user-images.githubusercontent.com/18203311/49511433-7d10bb00-f8ce-11e8-88dd-d81fe5f24e93.png)
 ![tknk04](https://user-images.githubusercontent.com/18203311/49511682-28217480-f8cf-11e8-8481-d6cd93ca3070.png)
+
 ## License
 tknk_scanner is open-sourced software licensed under the MIT License
 
@@ -104,7 +105,7 @@ tknk_scanner is open-sourced software licensed under the MIT License
   * [ProcDump](https://docs.microsoft.com/en-us/sysinternals/downloads/procdump) (Sysinternals)
   * [Scylla](https://github.com/NtQuery/Scylla) (NtQuery)
 * Malware characterization tools
-  * (AVClass)[https://github.com/malicialab/avclass] (IMDEA Software Institute)
-  * (Detect it Easy)[https://github.com/horsicq/Detect-It-Easy] (horsicq)
+  * [AVClass](https://github.com/malicialab/avclass) (IMDEA Software Institute)
+  * [Detect it Easy](https://github.com/horsicq/Detect-It-Easy) (horsicq)
 * Artwork
   * Icons made by [Freepik](https://www.freepik.com/) from [www.flaticon.com](www.freepik.com) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
