@@ -35,7 +35,7 @@ $ python3 setup.py build
 $ sudo python3 setup.py install
 ```
 4. Edit tknk.conf
-  * vm_name
+  * vm_name  
     Virtual Machine name  
   * vm_url
     * `xmlrpc_server.py` URL  
