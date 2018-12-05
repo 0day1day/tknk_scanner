@@ -59,7 +59,7 @@ $ git submodule update
 3. Install Python 3.6
 4. Set to the IP address described in `vm_url`.
 5. Copy and run `xmlrpc_server.py`
-6. Make snapshot$$ $ $ $ $  
+6. Make snapshot
 
 ### Setting Web-UI
 ```
