@@ -36,9 +36,10 @@ $ sudo python3 setup.py install
 ```
 4. Edit tknk.conf
   * vm_name  
-    Virtual Machine name  
+    * Virtual Machine name  
   * vm_url
-    * `xmlrpc_server.py` URL  
+    * URL of `xmlrpc_server.py`  
+    * e.g. `http://192.168.122.2:8000/`
   * virus_total
     * If VT use, set to 1  
   * vt_key
