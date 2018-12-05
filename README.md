@@ -44,8 +44,8 @@ $ sudo python3 setup.py install
  ```
  * Detect It Easy
    * Download zip from https://ntinfo.biz/  
-   * Extract zip to'tknk_scanner'
-   * Rename folder name 'die'
+   * Extract zip to`tknk_scanner`
+   * Rename folder name `die`
 6. Download and copy dump tools to `tools/`
     * [hollows_hunter](https://github.com/hasherezade/hollows_hunter)
     * [procdump](https://docs.microsoft.com/en-us/sysinternals/downloads/procdump)
@@ -57,7 +57,7 @@ $ sudo python3 setup.py install
 1. Install Windows on `KVM`
 2. Turn off `Windows Defender` and `Windows SmartScreen`
 3. Install Python 3.6
-4. Set to the IP address described in vm_url.
+4. Set to the IP address described in `vm_url`.
 5. Copy and run `xmlrpc_server.py`
 6. Make snapshot
 
