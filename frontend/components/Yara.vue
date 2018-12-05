@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-badge variant="danger" @click="show_detail">{{ yara }}</b-badge>
+    <b-badge variant="danger" @click="show_detail" to="#">{{ yara }}</b-badge>
     <b-modal ref="ruleDetail" class="detail" size="lg" hide-footer :title="yara">
       <template slot="modal-title" slot-scope="data">
         <span class="title">{{ data.value }}</span>
