@@ -9,6 +9,8 @@ The original code of a malware must be scanned using YARA rules after processing
     * Scan the original code of malware with yara.
 * Dumps original code of malware
     * You can easily get the original code. 
+* Community-based
+    * Integrates multiple Open Source Software and free tools
 * User-friendly Web-UI
     * Users can submit malware and check scan results using the Web-UI.
 
@@ -17,6 +19,8 @@ The original code of a malware must be scanned using YARA rules after processing
 * yara-python 3.7.0
 * qemu-kvm
 * nginx
+* Redis
+* MongoDB
 
 ## Installation
 
@@ -81,7 +85,9 @@ The default is 120 seconds.
     * hollows_hunter  
         Using [hollows_hunter](https://github.com/hasherezade/hollows_hunter).
     * prodump  
-        Using procdump dump.
+        Using procdump.
+    * scylla
+        Using Scylla.
     * diff(procdump)  
         Dump the newly created process while running with procdump.
 
@@ -90,6 +96,15 @@ The default is 120 seconds.
 ## License
 tknk_scanner is open-sourced software licensed under the MIT License
 
-## Thanks
-@hasherezade - [hollows_hunter](https://github.com/hasherezade/hollows_hunter)  
-yara-python -  https://github.com/VirusTotal/yara-python  
+## Credits
+* Developer
+  * [@nao_sec](https://twitter.com/nao_sec)
+* dump tools
+  * [hollows_hunter](https://github.com/hasherezade/hollows_hunter) ([@hasherezade](https://twitter.com/hasherezade))
+  * [ProcDump](https://docs.microsoft.com/en-us/sysinternals/downloads/procdump) (Sysinternals)
+  * [Scylla](https://github.com/NtQuery/Scylla) (NtQuery)
+* Malware characterization tools
+  * (AVClass)[https://github.com/malicialab/avclass] (IMDEA Software Institute)
+  * (Detect it Easy)[https://github.com/horsicq/Detect-It-Easy] (horsicq)
+* Artwork
+  * Icons made by [Freepik](https://www.freepik.com/) from [www.flaticon.com](www.freepik.com) is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/)
