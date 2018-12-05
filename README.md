@@ -35,8 +35,14 @@ $ python3 setup.py build
 $ sudo python3 setup.py install
 ```
 4. Edit tknk.conf
-    * vm_name
-    * vm_url
+  * vm_name
+    Virtual Machine name
+  * vm_url
+    * `xmlrpc_server.py` URL
+  * virus_total
+    * If VT use, set to 1 
+  * vt_key
+    * Your VT API KEY
 5. Download Malware characterization tools
  * avclass
  ```
