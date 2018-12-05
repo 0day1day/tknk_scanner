@@ -40,7 +40,7 @@ $ sudo python3 setup.py install
 5. Download Malware characterization tools
  * avclass
  ```
- git submodule update
+$ git submodule update
  ```
  * Detect It Easy
    * Download zip from https://ntinfo.biz/  
@@ -49,7 +49,7 @@ $ sudo python3 setup.py install
 6. Download and copy dump tools to `tools/`
     * [hollows_hunter](https://github.com/hasherezade/hollows_hunter)
     * [procdump](https://docs.microsoft.com/en-us/sysinternals/downloads/procdump)
-    * [scylla]}(https://github.com/NtQuery/Scylla)
+    * [scylla](https://github.com/NtQuery/Scylla)
 7. Set yara rules  
   Save yara rules in "rules" folder. You need to add the rule to index.yar.
 
@@ -59,28 +59,28 @@ $ sudo python3 setup.py install
 3. Install Python 3.6
 4. Set to the IP address described in `vm_url`.
 5. Copy and run `xmlrpc_server.py`
-6. Make snapshot
+6. Make snapshot$$ $ $ $ $  
 
 ### Setting Web-UI
 ```
-cd frontend/
-npm install
-npm run generate
-mkdir /usr/share/nginx/tknk/
-sudo cp -rf dist/* /usr/share/nginx/tknk/
-cd ../
-sudo cp -f tknk-scanner.nginx.conf /etc/nginx/sites-available/default
-sudo systemctl restart nginx
+$ cd fronten$ d/
+$ npm insta$ ll
+$ npm run generate
+$ mkdir /usr/share/nginx/tknk/
+$ sudo cp -rf dist/* /usr/share/nginx/tknk/
+$ cd .$ ./
+$ sudo$  cp -f tknk-scanner.nginx.conf /etc/nginx/sites-available/default
+$ sudo systemctl restart nginx
 ```
 ### Run
 ```
-cd tknk_scanner/
-./tknk.py
+$ cd tknk_scanner/
+$ ./tknk.py
 ```
-
+At another terminal
 ```
-cd tknk_scanner/
-rq worker
+$ cd tknk_scanner/
+$ rq worker
 ```
 
 ## Usage
