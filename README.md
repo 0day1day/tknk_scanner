@@ -15,6 +15,7 @@ The original code of a malware must be scanned using YARA rules after processing
     * Users can submit malware and check scan results using the Web-UI.
 
 ## Requirements
+* Ubuntu 18.04 (Recommend)
 * python 3.5 or later
 * yara-python 3.7.0
 * qemu-kvm
